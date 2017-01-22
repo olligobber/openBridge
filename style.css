@@ -1,0 +1,45 @@
+body {
+	font-family: sans-serif;
+}
+
+main {
+	width: 50%;
+	height: 100%;
+}
+
+#scorepad {
+	border-collapse: collapse;
+	border-spacing: 0px;
+	width: 90%;
+	height: 90%;
+	text-align: center;
+	margin: 5%;
+}
+
+#scorepad td {
+	font-size: 1.5em;
+}
+
+#we {
+	border-right: 2px solid black;
+	width: 50%;
+}
+
+#they {
+	width: 50%;
+}
+
+#scorepad th {
+	border-bottom: 2px solid black;
+	font-size: 2em;
+}
+
+#above {
+	border-bottom: 2px solid black;
+	height: 50%;
+	vertical-align: bottom;
+}
+
+#botpad {
+	height: 50%;
+}
