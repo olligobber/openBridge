@@ -27,7 +27,6 @@ function Hand() {
 	// Default Values
 	this.suit = null; // Suit bid [Clubs, Diamonds, Hearts, Spades, NoTrumps]
 	this.level = null; // Level bid [1..7]
-	this.declarer = null; // Declarer
 	this.vulnerable = false; // Vulnerability of declarer [true, false]
 	this.result = null; // Tricks won by declarer [0..13], null means result was got exactly
 	this.honours = null; // Honours held out of 5 for trump suit, or all aces held [-5, -4, null, 4, 5] Negative indicates opposition holding honours

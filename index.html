@@ -3,12 +3,11 @@
 		<link rel=stylesheet href="style.css">
 	</head>
 	<body>
-		<main>
-			<table id=scorepad>
-				<colgroup>
-					<col id=we>
-					<col id=they>
-				</colgroup>
+		<noscript>
+			<h1>Please enable scripting to use this scorepad</h1>
+		</noscript>
+		<div id=scorepad>
+			<table>
 				<thead>
 					<tr>
 						<th>We</th>
@@ -20,9 +19,21 @@
 						<td id=we_above>100<br>50<br>20</td>
 						<td id=they_above>20<br>700</td>
 					</tr>
+					<tr class=game>
+						<td>100</td>
+						<td></td>
+					</tr>
 					<tr>
-						<td>100</td>
-						<td>100</td>
+						<td></td>
+						<td>40</td>
+					</tr>
+					<tr class=game>
+						<td></td>
+						<td>90</td>
+					</tr>
+					<tr>
+						<td>20</td>
+						<td></td>
 					</tr>
 					<tr id=botpad>
 						<td></td>
@@ -30,7 +41,103 @@
 					</tr>
 				</tbody>
 			</table>
-		</main>
+		</div>
+		<div id=hands>
+			<div id=history>
+				<table>
+					<tr>
+						<th colspan=2><button type=button onClick='New();'>New Hand</th>
+					</tr>
+					<tr>
+						<td>N4\+3</td>
+						<td><button type=button onclick='Edit(1, this);'>Edit</button></td>
+					</tr>
+					<tr>
+						<td>W3&hearts;-2 </td>
+						<td><button type=button onclick='Edit(2, this);'>Edit</button></td>
+					</tr>
+					<tr>
+						<td>S7&spades;-2 </td>
+						<td><button type=button>Edit</button></td>
+					</tr>
+					<tr>
+						<td>E3&clubs;+0 </td>
+						<td><button type=button>Edit</button></td>
+					</tr>
+					<tr>
+						<td>N7&diams;-13 </td>
+						<td><button type=button>Edit</button></td>
+					</tr>
+					<tr>
+						<td>N4\+3</td>
+						<td><button type=button>Edit</button></td>
+					</tr>
+					<tr>
+						<td>N4\+3</td>
+						<td><button type=button>Edit</button></td>
+					</tr>
+					<tr>
+						<td>N4\+3</td>
+						<td><button type=button>Edit</button></td>
+					</tr>
+					<tr>
+						<td>N4\+3</td>
+						<td><button type=button>Edit</button></td>
+					</tr>
+				</table>
+			</div>
+			<div id=buttons style="display: none;">
+				<table>
+					<tr>
+						<td><button type=button onclick="SetLevel(1, this);">1</button></td>
+						<td><button type=button onclick="SetLevel(2, this);">2</button></td>
+						<td><button type=button onclick="SetLevel(3, this);">3</button></td>
+						<td><button type=button onclick="SetLevel(4, this);">4</button></td>
+						<td><button type=button onclick="SetLevel(5, this);">5</button></td>
+						<td><button type=button onclick="SetLevel(6, this);">6</button></td>
+						<td><button type=button onclick="SetLevel(7, this);">7</button></td>
+					</tr>
+				</table>
+				<table>
+					<tr>
+						<td><button type=button onclick="SetSuit('C', this);">&clubs;</button></td>
+						<td><button type=button onclick="SetSuit('D', this);">&diams;</button></td>
+						<td><button type=button onclick="SetSuit('H', this);">&hearts;</button></td>
+						<td><button type=button onclick="SetSuit('S', this);">&spades;</button></td>
+						<td><button type=button onclick="SetSuit('N', this);">\</button></td>
+					</tr>
+				</table>
+				<table>
+					<tr>
+						<td><button type=button>-</button></td>
+						<td id=result></td>
+						<td><button type=button>+</button></td>
+					</tr>
+				</table>
+				<table>
+					<tr>
+						<td><select>
+							<option value=1>Undoubled</option>
+							<option value=2>Doubled</option>
+							<option value=4>Redoubled</option>
+						</select></td>
+						<td><select>
+							<option value=null>No honors</option>
+							<option value="W4">We have 4</option>
+							<option value="W5">We have 5</option>
+							<option value="T4">They have 4</option>
+							<option value="T5">They have 5</option>
+						</select></td>
+					</tr>
+				</table>
+				<table>
+					<tr>
+						<td><button type=button class=sans onclick='Submit();'>Submit</button></td>
+					</tr>
+				</table>
+			</div>
+		</div>
 		<script src="js/hand.js"></script>
+		<script src="js/main.js"></script>
 	</body>
 </html>
