@@ -29,7 +29,7 @@ function Hand() {
 	this.level = null; // Level bid [1..7]
 	this.vulnerable = false; // Vulnerability of declarer [true, false]
 	this.result = null; // Tricks won by declarer [0..13], null means result was got exactly
-	this.honours = null; // Honours held out of 5 for trump suit, or all aces held [-5, -4, null, 4, 5] Negative indicates opposition holding honours
+	this.honours = 0; // Honours held out of 5 for trump suit, or all aces held [-5, -4, 0, 4, 5] Negative indicates opposition holding honours
 	this.victory = true; // Whether or not the contract was made
 	this.scoreBelow = null; // Score below the line for declarer [0..880]
 	this.scoreAbove = null; // Score above the line for declarer [0..4150]
@@ -73,7 +73,7 @@ function Hand() {
 				}
 			}
 		}
-		if (this.honours != null) { // Honours bonuses
+		if (this.honours != 0) { // Honours bonuses
 			if (this.suit == NoTrumps && (this.honours == 4 || this.honours == -4)) {
 				this.honours = this.honours / 4 * 5;
 			}

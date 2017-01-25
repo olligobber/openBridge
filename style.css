@@ -53,11 +53,20 @@ body {
 }
 
 #scorepad th {
+	font-size: 2.5em; /* For browsers without viewport sizing, this is about the same at 1080p */
+	font-size: 4.0vh;
+}
+
+#scorepad thead tr {
 	border-bottom: solid black;
 	border-bottom-width: 2px; /* For browsers without viewport sizing, this is about the same at 1080p */
 	border-bottom-width: 0.3vh;
-	font-size: 2.5em; /* For browsers without viewport sizing, this is about the same at 1080p */
-	font-size: 4.0vh;
+}
+
+#total {
+	border-top: solid black;
+	border-top-width: 2px; /* For browsers without viewport sizing, this is about the same at 1080p */
+	border-top-width: 0.3vh;
 }
 
 #above {
@@ -106,8 +115,8 @@ body {
 }
 
 #history td {
-	height: 1.8em; /* For browsers without viewport sizing, this is about the same at 1080p */
-	height: 3.0vh;
+	height: 1.4em; /* For browsers without viewport sizing, this is about the same at 1080p */
+	height: 4.0vh;
 	border: solid black;
 	border-width: 1px; /* For browsers without viewport sizing, this is about the same at 1080p */
 	border-width: 0.2vh;
@@ -130,10 +139,10 @@ body {
 	font-family: monospace;
 	font-size: 1.8em; /* For browsers without viewport sizing, this is about the same at 1080p */
 	font-size: 3.0vh;
+	width: 100%;
 }
 
 #history td:last-child {
-	text-align: right;
 	border-right: solid black;
 	border-right-width: 1px; /* For browsers without viewport sizing, this is about the same at 1080p */
 	border-right-width: 0.2vh;
@@ -155,15 +164,15 @@ tr.selected button {
 
 #buttons table {
 	width: 100%;
-	height: 20%;
+	height: 16%;
 	text-align: center;
 }
 
 #buttons table button {
 	width: 90%;
 	height: 90%;
-	font-size: 2.5em; /* For browsers without viewport sizing, this is about the same at 1080p */
-	font-size: 4.0vh;
+	font-size: 2.0em; /* For browsers without viewport sizing, this is about the same at 1080p */
+	font-size: 3.2vh;
 	font-family: monospace;
 }
 
@@ -192,4 +201,5 @@ button.selected {
 
 #result {
 	width: 70%;
+	font-family: monospace;
 }

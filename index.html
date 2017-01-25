@@ -39,6 +39,10 @@
 						<td></td>
 						<td></td>
 					</tr>
+					<tr id=total>
+						<th>0</th>
+						<th>0</th>
+					</tr>
 				</tbody>
 			</table>
 		</div>
@@ -46,49 +50,22 @@
 			<div id=history>
 				<table>
 					<tr>
-						<th colspan=2><button type=button onClick='New();'>New Hand</th>
-					</tr>
-					<tr>
-						<td>N4\+3</td>
-						<td><button type=button onclick='Edit(1, this);'>Edit</button></td>
-					</tr>
-					<tr>
-						<td>W3&hearts;-2 </td>
-						<td><button type=button onclick='Edit(2, this);'>Edit</button></td>
-					</tr>
-					<tr>
-						<td>S7&spades;-2 </td>
-						<td><button type=button>Edit</button></td>
-					</tr>
-					<tr>
-						<td>E3&clubs;+0 </td>
-						<td><button type=button>Edit</button></td>
-					</tr>
-					<tr>
-						<td>N7&diams;-13 </td>
-						<td><button type=button>Edit</button></td>
-					</tr>
-					<tr>
-						<td>N4\+3</td>
-						<td><button type=button>Edit</button></td>
-					</tr>
-					<tr>
-						<td>N4\+3</td>
-						<td><button type=button>Edit</button></td>
-					</tr>
-					<tr>
-						<td>N4\+3</td>
-						<td><button type=button>Edit</button></td>
-					</tr>
-					<tr>
-						<td>N4\+3</td>
-						<td><button type=button>Edit</button></td>
+						<th colspan=3><button type=button onClick='New();'>New Hand</th>
 					</tr>
 				</table>
 			</div>
 			<div id=buttons style="display: none;">
 				<table>
-					<tr>
+					<tr id=declarer>
+						<td><button type=button onclick="SetDeclarer('N', this);">N</button></td>
+						<td><button type=button onclick="SetDeclarer('E', this);">E</button></td>
+						<td><button type=button onclick="SetDeclarer('S', this);">S</button></td>
+						<td><button type=button onclick="SetDeclarer('W', this);">W</button></td>
+						<td><button type=button onclick="SetDeclarer('AP', this);">AP</button></td>
+					</tr>
+				</table>
+				<table>
+					<tr id=level>
 						<td><button type=button onclick="SetLevel(1, this);">1</button></td>
 						<td><button type=button onclick="SetLevel(2, this);">2</button></td>
 						<td><button type=button onclick="SetLevel(3, this);">3</button></td>
@@ -99,34 +76,34 @@
 					</tr>
 				</table>
 				<table>
-					<tr>
-						<td><button type=button onclick="SetSuit('C', this);">&clubs;</button></td>
-						<td><button type=button onclick="SetSuit('D', this);">&diams;</button></td>
-						<td><button type=button onclick="SetSuit('H', this);">&hearts;</button></td>
-						<td><button type=button onclick="SetSuit('S', this);">&spades;</button></td>
-						<td><button type=button onclick="SetSuit('N', this);">\</button></td>
+					<tr id=suit>
+						<td><button type=button onclick="SetSuit(Clubs, this);">&clubs;</button></td>
+						<td><button type=button onclick="SetSuit(Diamonds, this);">&diams;</button></td>
+						<td><button type=button onclick="SetSuit(Hearts, this);">&hearts;</button></td>
+						<td><button type=button onclick="SetSuit(Spades, this);">&spades;</button></td>
+						<td><button type=button onclick="SetSuit(NoTrumps, this);">\</button></td>
 					</tr>
 				</table>
 				<table>
 					<tr>
-						<td><button type=button>-</button></td>
+						<td><button type=button onClick="ChangeResult(-1);">-</button></td>
 						<td id=result></td>
-						<td><button type=button>+</button></td>
+						<td><button type=button onClick="ChangeResult(1);">+</button></td>
 					</tr>
 				</table>
 				<table>
 					<tr>
-						<td><select>
+						<td><select id="double">
 							<option value=1>Undoubled</option>
 							<option value=2>Doubled</option>
 							<option value=4>Redoubled</option>
 						</select></td>
-						<td><select>
-							<option value=null>No honors</option>
-							<option value="W4">We have 4</option>
-							<option value="W5">We have 5</option>
-							<option value="T4">They have 4</option>
-							<option value="T5">They have 5</option>
+						<td><select id="honours">
+							<option value=0>No honors</option>
+							<option value="4">We have 4</option>
+							<option value="5">We have 5</option>
+							<option value="-4">They have 4</option>
+							<option value="-5">They have 5</option>
 						</select></td>
 					</tr>
 				</table>
