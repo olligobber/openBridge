@@ -16,24 +16,8 @@
 				</thead>
 				<tbody>
 					<tr id=above>
-						<td id=we_above>100<br>50<br>20</td>
-						<td id=they_above>20<br>700</td>
-					</tr>
-					<tr class=game>
-						<td>100</td>
-						<td></td>
-					</tr>
-					<tr>
-						<td></td>
-						<td>40</td>
-					</tr>
-					<tr class=game>
-						<td></td>
-						<td>90</td>
-					</tr>
-					<tr>
-						<td>20</td>
-						<td></td>
+						<td id=we_above></td>
+						<td id=they_above></td>
 					</tr>
 					<tr id=botpad>
 						<td></td>
@@ -101,15 +85,16 @@
 						<td><select id="honours">
 							<option value=0>No honors</option>
 							<option value="4">We have 4</option>
-							<option value="5">We have 5</option>
+							<option value="5">We have all</option>
 							<option value="-4">They have 4</option>
-							<option value="-5">They have 5</option>
+							<option value="-5">They have all</option>
 						</select></td>
 					</tr>
 				</table>
 				<table>
 					<tr>
 						<td><button type=button class=sans onclick='Submit();'>Submit</button></td>
+						<td><button type=button class=sans onclick='Revert();'>Revert</button></td>
 					</tr>
 				</table>
 			</div>

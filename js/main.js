@@ -56,6 +56,8 @@ var suit = null;
 var selectedHand = null;
 var result = null;
 var allHands = [];
+var we_games = 0;
+var they_games = 0;
 
 function elt(type) { // Borrowed from http://eloquentjavascript.net/13_dom.html
 	var node = document.createElement(type);
@@ -114,6 +116,7 @@ function New() {
 function Delete(hand) {
 	allHands[hand].element.outerHTML = "";
 	allHands[hand] = null;
+	renderScores();
 }
 
 function Revert() {
@@ -142,6 +145,7 @@ function Revert() {
 	selectedHand = null;
 	document.getElementById('double').value = 1;
 	document.getElementById('honours').value = 0;
+	result = null;
 	setResult();
 }
 
@@ -156,16 +160,17 @@ function Submit() {
 		selectedHand.declarer = declarer;
 		selectedHand.level = level;
 		selectedHand.suit = suit;
-		selectedHand.double = document.getElementById('double').value;
+		selectedHand.double = parseInt(document.getElementById('double').value);
 		if (declarer == "N" || declarer == "S") {
-			selectedHand.honours = document.getElementById('honours').value;
+			selectedHand.honours = parseInt(document.getElementById('honours').value);
 		}
 		else {
-			selectedHand.honours = - document.getElementById('honours').value;
+			selectedHand.honours = - parseInt(document.getElementById('honours').value);
 		}
-		// result
+		selectedHand.result = result;
 		selectedHand.element.children[0].innerHTML = selectedHand.render();
 		Revert();
+		renderScores();
 	}
 }
 
@@ -243,15 +248,109 @@ function ChangeResult(change) {
 	setResult();
 }
 
+function addAbove(who, what) {
+	var element = document.getElementById(who + "_above");
+	if (element.innerHTML == "") {
+		element.innerHTML = what + element.innerHTML;
+	}
+	else {
+		element.innerHTML = what + "<br>" + element.innerHTML;
+	}
+}
+
 function renderScores() {
 	// remove all scores
 	document.getElementById("we_above").innerHTML = "";
 	document.getElementById("they_above").innerHTML = "";
-	for (var i = document.getElementById("scorepad").children[0].children[1].children.length-1; i >= 0; --i) {
-		if (document.getElementById("scorepad").children[0].children[1].children[i].id == "") {
-			document.getElementById("scorepad").children[0].children[1].children[i].outerHTML = "";
+	for (var i = document.getElementById("above").parentElement.children.length-1; i >= 0; --i) {
+		if (document.getElementById("above").parentElement.children[i].id == "") {
+			document.getElementById("above").parentElement.children[i].outerHTML = "";
 		}
 	}
 
-	
+	var we_total = 0;
+	var they_total = 0;
+	var we_below = 0;
+	var they_below = 0;
+	we_games = 0;
+	they_games = 0;
+
+	for (var i = 0; i < allHands.length; ++i) {
+		if (allHands[i] == null) {
+
+		}
+		else if (allHands[i].declarer != "AP") {
+			if (allHands[i].declarer == "N" || allHands[i].declarer == "S") {
+				allHands[i].vulnerable = (we_games == 1);
+				allHands[i].score();
+				if (allHands[i].scoreBelow != 0) {
+					document.getElementById("botpad").parentElement.insertBefore(elt("tr", elt("td", "" + allHands[i].scoreBelow), elt("td")), document.getElementById("botpad"));
+					we_below += allHands[i].scoreBelow;
+					if (we_below > 99) {
+						document.getElementById("botpad").previousSibling.className = "game";
+						we_games++;
+						we_below = 0;
+						they_below = 0;
+					}
+				}
+				if (allHands[i].scoreAbove != 0) {
+					addAbove("we", allHands[i].scoreAbove);
+				}
+				if (allHands[i].scoreOpponent != 0) {
+					addAbove("they", allHands[i].scoreOpponent);
+				}
+				if (we_games == 2) {
+					if (they_games == 1) {
+						addAbove("we", 500);
+						we_total += 500;
+					}
+					else {
+						addAbove("we", 700);
+						we_total += 700;
+					}
+					we_games = 0;
+					they_games = 0;
+				}
+				we_total += allHands[i].scoreBelow + allHands[i].scoreAbove;
+				they_total += allHands[i].scoreOpponent;
+			}
+			else {
+				allHands[i].vulnerable = (they_games == 1);
+				allHands[i].score();
+				if (allHands[i].scoreBelow != 0) {
+					document.getElementById("botpad").parentElement.insertBefore(elt("tr", elt("td"), elt("td", "" + allHands[i].scoreBelow)), document.getElementById("botpad"));
+					they_below += allHands[i].scoreBelow;
+					if (they_below > 99) {
+						document.getElementById("botpad").previousSibling.className = "game";
+						they_games++;
+						we_below = 0;
+						they_below = 0;
+					}
+				}
+				if (allHands[i].scoreAbove != 0) {
+					addAbove("they", allHands[i].scoreAbove);
+				}
+				if (allHands[i].scoreOpponent != 0) {
+					addAbove("we", allHands[i].scoreOpponent);
+				}
+				if (they_games == 2) {
+					if (we_games == 1) {
+						addAbove("they", 500);
+						they_total += 500;
+					}
+					else {
+						addAbove("they", 700);
+						they_total += 700;
+					}
+					we_games = 0;
+					they_games = 0;
+				}
+
+				they_total += allHands[i].scoreBelow + allHands[i].scoreAbove;
+				we_total += allHands[i].scoreOpponent;
+			}
+		}
+	}
+	document.getElementById("total").children[0].innerHTML = we_total;
+	document.getElementById("total").children[1].innerHTML = they_total;
 }

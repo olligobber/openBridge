@@ -81,7 +81,7 @@ function Hand() {
 				this.scoreAbove += 50 * (this.honours - 2);
 			}
 			else { // Opposition has honours
-				this.scoreOpponent += 50 * (this.honours - 2);
+				this.scoreOpponent += 50 * (2 - this.honours);
 			}
 		}
 		return true;
