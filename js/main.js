@@ -179,14 +179,17 @@ function Edit(index) {
 	selectedHand = allHands[index];
 	selectedHand.element.className = 'selected';
 	declarer = selectedHand.declarer;
-	document.getElementById('declarer').children[declarerIndex.indexOf(declarer)].children[0].className = 'selected';
+	selectedDeclarer = document.getElementById('declarer').children[declarerIndex.indexOf(declarer)].children[0];
+	selectedDeclarer.className = 'selected';
 	level = selectedHand.level;
 	if (level != null) {
-		document.getElementById('level').children[level-1].children[0].className = 'selected';
+		selectedLevel = document.getElementById('level').children[level-1].children[0];
+		selectedLevel.className = 'selected';
 	}
 	suit = selectedHand.suit;
 	if (suit != null) {
-		document.getElementById('suit').children[suit.index].children[0].className = 'selected';
+		selectedSuit = document.getElementById('suit').children[suit.index].children[0];
+		selectedSuit.className = 'selected';
 	}
 	result = selectedHand.result;
 	setResult();
