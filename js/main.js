@@ -1,3 +1,13 @@
+var main_js_version = "0.1.3"
+
+if (typeof hand_js_version == "undefined") {
+	console.error("main.js detected that hand.js was not loaded");
+}
+
+if (hand_js_version != "1.0.1") {
+	console.error("main.js detected that the current version of hand.js was not correctly loaded");
+}
+
 Clubs.symbol = '&clubs;';
 Clubs.index = 0;
 Diamonds.symbol = '&diams;';

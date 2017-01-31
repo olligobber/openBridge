@@ -1,3 +1,5 @@
+var hand_js_version = "1.0.1"
+
 var Clubs = {
 	value : 20,
 	first : 0
