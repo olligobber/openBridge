@@ -34,45 +34,45 @@
 			<div id=history>
 				<table>
 					<tr>
-						<th colspan=3><button type=button onClick='New();'>New Hand</th>
+						<th colspan=3><button type=button onClick='scorepad.newHand();'>New Hand</th>
 					</tr>
 				</table>
 			</div>
 			<div id=buttons style="display: none;">
 				<table>
 					<tr id=declarer>
-						<td><button type=button onclick="SetDeclarer('N', this);">N</button></td>
-						<td><button type=button onclick="SetDeclarer('E', this);">E</button></td>
-						<td><button type=button onclick="SetDeclarer('S', this);">S</button></td>
-						<td><button type=button onclick="SetDeclarer('W', this);">W</button></td>
-						<td><button type=button onclick="SetDeclarer('AP', this);">AP</button></td>
+						<td><button type=button onclick="scorepad.setDeclarer(players.North);">N</button></td>
+						<td><button type=button onclick="scorepad.setDeclarer(players.East);">E</button></td>
+						<td><button type=button onclick="scorepad.setDeclarer(players.South);">S</button></td>
+						<td><button type=button onclick="scorepad.setDeclarer(players.West);">W</button></td>
+						<td><button type=button onclick="scorepad.allPassOn();">AP</button></td>
 					</tr>
 				</table>
 				<table>
 					<tr id=level>
-						<td><button type=button onclick="SetLevel(1, this);">1</button></td>
-						<td><button type=button onclick="SetLevel(2, this);">2</button></td>
-						<td><button type=button onclick="SetLevel(3, this);">3</button></td>
-						<td><button type=button onclick="SetLevel(4, this);">4</button></td>
-						<td><button type=button onclick="SetLevel(5, this);">5</button></td>
-						<td><button type=button onclick="SetLevel(6, this);">6</button></td>
-						<td><button type=button onclick="SetLevel(7, this);">7</button></td>
+						<td><button type=button onclick="scorepad.setLevel(1);">1</button></td>
+						<td><button type=button onclick="scorepad.setLevel(2);">2</button></td>
+						<td><button type=button onclick="scorepad.setLevel(3);">3</button></td>
+						<td><button type=button onclick="scorepad.setLevel(4);">4</button></td>
+						<td><button type=button onclick="scorepad.setLevel(5);">5</button></td>
+						<td><button type=button onclick="scorepad.setLevel(6);">6</button></td>
+						<td><button type=button onclick="scorepad.setLevel(7);">7</button></td>
 					</tr>
 				</table>
 				<table>
 					<tr id=suit>
-						<td><button type=button onclick="SetSuit(Clubs, this);">&clubs;</button></td>
-						<td><button type=button onclick="SetSuit(Diamonds, this);">&diams;</button></td>
-						<td><button type=button onclick="SetSuit(Hearts, this);">&hearts;</button></td>
-						<td><button type=button onclick="SetSuit(Spades, this);">&spades;</button></td>
-						<td><button type=button onclick="SetSuit(NoTrumps, this);">\</button></td>
+						<td><button type=button onclick="scorepad.setSuit(suit.Clubs);">&clubs;</button></td>
+						<td><button type=button onclick="scorepad.setSuit(suit.Diamonds);">&diams;</button></td>
+						<td><button type=button onclick="scorepad.setSuit(suit.Hearts);">&hearts;</button></td>
+						<td><button type=button onclick="scorepad.setSuit(suit.Spades);">&spades;</button></td>
+						<td><button type=button onclick="scorepad.setSuit(suit.NoTrumps);">\</button></td>
 					</tr>
 				</table>
 				<table>
 					<tr>
-						<td><button type=button onClick="ChangeResult(-1);">-</button></td>
+						<td><button type=button onClick="scorepad.changeResult(-1);">-</button></td>
 						<td id=result></td>
-						<td><button type=button onClick="ChangeResult(1);">+</button></td>
+						<td><button type=button onClick="scorepad.changeResult(1);">+</button></td>
 					</tr>
 				</table>
 				<table>
@@ -84,17 +84,17 @@
 						</select></td>
 						<td><select id="honours">
 							<option value=0>No honors</option>
-							<option value="4">We have 4</option>
-							<option value="5">We have all</option>
-							<option value="-4">They have 4</option>
-							<option value="-5">They have all</option>
+							<option value=4>We have 4</option>
+							<option value=5>We have all</option>
+							<option value=-4>They have 4</option>
+							<option value=-5>They have all</option>
 						</select></td>
 					</tr>
 				</table>
 				<table>
 					<tr>
-						<td><button type=button class=sans onclick='Submit();'>Submit</button></td>
-						<td><button type=button class=sans onclick='Revert();'>Revert</button></td>
+						<td><button type=button class=sans onclick='scorepad.submitHand();'>Submit</button></td>
+						<td><button type=button class=sans onclick='scorepad.clearHand();'>Revert</button></td>
 					</tr>
 				</table>
 			</div>
@@ -105,7 +105,7 @@
 			if (typeof main_js_version == "undefined" || typeof hand_js_version == "undefined") {
 				document.body.innerHTML = "<h1>Javascript files were not loaded. Please report this bug.</h1>";
 			}
-			if (main_js_version != "0.1.3" || hand_js_version != "1.0.1") {
+			else if (main_js_version != "1.0" || hand_js_version != "1.1") {
 				document.body.innerHTML = "<h1>Javascript files out of date. Please <a href='javascript:location.reload(true);'>click here to hard reload the page</a>.</h1>";
 			}
 		</script>

@@ -1,28 +1,32 @@
-var hand_js_version = "1.0.1"
+var hand_js_version = "1.1"
 
-var Clubs = {
-	value : 20,
-	first : 0
-};
+var suit = {
 
-var Diamonds = {
-	value : 20,
-	first : 0
-};
+	Clubs : {
+		value : 20,
+		first : 0
+	},
 
-var Hearts = {
-	value : 30,
-	first : 0
-};
+	Diamonds : {
+		value : 20,
+		first : 0
+	},
 
-var Spades = {
-	value : 30,
-	first : 0
-};
+	Hearts : {
+		value : 30,
+		first : 0
+	},
 
-var NoTrumps = {
-	value : 30,
-	first : 10
+	Spades : {
+		value : 30,
+		first : 0
+	},
+
+	NoTrumps : {
+		value : 30,
+		first : 10
+	}
+
 };
 
 function Hand() {
@@ -76,7 +80,7 @@ function Hand() {
 			}
 		}
 		if (this.honours != 0) { // Honours bonuses
-			if (this.suit == NoTrumps && (this.honours == 4 || this.honours == -4)) {
+			if (this.suit == suit.NoTrumps && (this.honours == 4 || this.honours == -4)) {
 				this.honours = this.honours / 4 * 5;
 			}
 			if (this.honours > 0) { // Declarer has honours
