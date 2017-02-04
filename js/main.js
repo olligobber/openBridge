@@ -1,4 +1,4 @@
-var main_js_version = "1.0"
+var main_js_version = "1.0.1"
 
 if (typeof hand_js_version == "undefined") {
 	console.error("main.js detected that hand.js was not loaded");
@@ -110,7 +110,7 @@ function elt(type) { // Borrowed from http://eloquentjavascript.net/13_dom.html
 }
 
 Hand.prototype.render = function() {
-	if (this.allpass) {
+	if (this.allPass) {
 		return "AP";
 	}
 	if (this.declarer != null && this.score()) {
@@ -198,10 +198,10 @@ var scorepad = {
 		}
 		else {
 			if (this.currentHand.result < 10) {
-				elements.result.innerHTML = "&nbsp;" + (this.currentHand.level+6) + "&nbsp;" + renderResult(this.currentHand.level, this.currentHand.result);
+				elements.result.innerHTML = "&nbsp;" + (this.currentHand.result) + "&nbsp;" + renderResult(this.currentHand.level, this.currentHand.result);
 			}
 			else {
-				elements.result.innerHTML = (this.currentHand.level+6) + "&nbsp;" + renderResult(this.currentHand.level, this.currentHand.result);
+				elements.result.innerHTML = (this.currentHand.result) + "&nbsp;" + renderResult(this.currentHand.level, this.currentHand.result);
 			}
 		}
 	},
@@ -239,7 +239,7 @@ var scorepad = {
 			this.allHands[i].score();
 
 			if (this.allHands[i].scoreBelow != 0) {
-				total[this.allHands[i].declarer.team] += this.allHands[i].scoreBelow;
+				totals[this.allHands[i].declarer.team] += this.allHands[i].scoreBelow;
 				if (this.allHands[i].declarer.team == "we") {
 					elements.scores.insertBefore(elt("tr", elt("td", "" + this.allHands[i].scoreBelow), elt("td")), elements.botpad);
 				}
