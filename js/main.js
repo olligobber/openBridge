@@ -14,7 +14,7 @@
 	limitations under the License.
 */
 
-var main_js_version = "1.0.1"
+var main_js_version = "1.0.2"
 
 if (typeof hand_js_version == "undefined") {
 	console.error("main.js detected that hand.js was not loaded");
@@ -201,7 +201,7 @@ var scorepad = {
 		if (this.currentHand == null) {
 			elements.result.innerHTML = "";
 		}
-		else if (this.currentHand.declarer == "AP" || this.currentHand.level == null) {
+		else if (this.currentHand.allPass || this.currentHand.level == null) {
 			elements.result.innerHTML = "";
 		}
 		else if (this.currentHand.result == null) {
@@ -327,7 +327,10 @@ var scorepad = {
 		if (this.currentHand.allPass || this.currentHand.score()) {
 			this.currentHand.double = parseInt(elements.double.value);
 			this.currentHand.honours = parseInt(elements.honours.value);
-			if (this.currentHand.declarer.team == "they") {
+			if (this.currentHand.allPass && this.currentHand.declarer == null) {
+				this.currentHand.honours = 0; // Honours cannot be recorded properly with no declarer
+			}
+			else if (this.currentHand.declarer.team == "they") {
 				this.currentHand.honours = - this.currentHand.honours;
 			}
 			this.currentHand.element.children[0].innerHTML = this.currentHand.render();
@@ -429,6 +432,9 @@ var scorepad = {
 
 	changeResult : function(change) {
 		if (this.currentHand.result == null) {
+			if (this.currentHand.level == null || this.currentHand.allPass) {
+				return;
+			}
 			if (this.currentHand.level == 7 && change > 0) {
 				return;
 			}
