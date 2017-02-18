@@ -212,7 +212,7 @@ button {
 }
 
 button.selected {
-	background-color: darkgrey;
+	background-color: skyblue;
 }
 
 #result {
