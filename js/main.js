@@ -14,7 +14,7 @@
 	limitations under the License.
 */
 
-var main_js_version = "1.0.2"
+var main_js_version = "1.0.3"
 
 if (typeof hand_js_version == "undefined") {
 	console.error("main.js detected that hand.js was not loaded");
