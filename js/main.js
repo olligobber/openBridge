@@ -366,7 +366,10 @@ var scorepad = {
 		}
 
 		elements.double.value = this.currentHand.double;
-		if (this.currentHand.declarer.team == 'we') {
+		if (this.currentHand.allPass && this.currentHand.declarer == null) {
+			elements.honours.value = 0;
+		}
+		else if (this.currentHand.declarer.team == 'we') {
 			elements.honours.value = this.currentHand.honours;
 		}
 		else {
