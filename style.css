@@ -14,6 +14,17 @@
 	limitations under the License.
 */
 
+/*
+	This project provides a scorepad for rubber bridge, intended to be used on
+	any device, and is currently hosted at
+
+		https://github.com/olligobber/openBridge
+
+	Go to the github page to report any bugs and contribute to the project.
+
+	This is the stylesheet for index.html.
+*/
+
 body {
 	font-family: sans-serif;
 	font-size: 1.8em; /* For browsers without viewport sizing, this is about the same at 1080p */
@@ -23,10 +34,11 @@ body {
 
 @media (orientation: portrait) {
 	body {
-		width:200%;
+		width:200%; /* So each column occupies the entire screen */
 	}
 }
 
+/* The leftmost column */
 #scorepad {
 	float: left;
 	width: 49%;
@@ -34,6 +46,7 @@ body {
 	margin-right: 1%
 }
 
+/* The second column */
 #hands {
 	float: right;
 	width: 49%;
@@ -55,6 +68,7 @@ body {
 	font-size: 3.0vh;
 }
 
+/* The "we" side of the scorepad */
 #scorepad td:first-child,
 #scorepad th:first-child {
 	border-right: solid black;
@@ -63,6 +77,7 @@ body {
 	width: 50%;
 }
 
+/* The "they" side of the scorepad */
 #scorepad td:last-child,
 #scorepad th:last-child {
 	width: 50%;
@@ -73,18 +88,21 @@ body {
 	font-size: 4.0vh;
 }
 
+/* Line below the titles of the columns */
 #scorepad thead tr {
 	border-bottom: solid black;
 	border-bottom-width: 2px; /* For browsers without viewport sizing, this is about the same at 1080p */
 	border-bottom-width: 0.3vh;
 }
 
+/* Line above the totals */
 #total {
 	border-top: solid black;
 	border-top-width: 2px; /* For browsers without viewport sizing, this is about the same at 1080p */
 	border-top-width: 0.3vh;
 }
 
+/* Scores above the line */
 #above {
 	border-bottom: solid black;
 	border-bottom-width: 2px; /* For browsers without viewport sizing, this is about the same at 1080p */
@@ -93,16 +111,19 @@ body {
 	vertical-align: bottom;
 }
 
+/* A line below games */
 .game {
 	border-bottom: solid black;
 	border-bottom-width: 2px; /* For browsers without viewport sizing, this is about the same at 1080p */
 	border-bottom-width: 0.3vh;
 }
 
+/* Padding below the line to make the scorepad vertically aligned */
 #scorepad #botpad {
 	height: 50%;
 }
 
+/* The list of hands in the top part of the second column */
 #history {
 	width: 90%;
 	height: 45%;
@@ -120,11 +141,13 @@ body {
 	width: 100%;
 }
 
+/* Contains the "New Hand" Button */
 #history th {
 	border: white;
 	padding: 2%;
 }
 
+/* The "New Hand" Button */
 #history th button {
 	font-size: 2.5em; /* For browsers without viewport sizing, this is about the same at 1080p */
 	font-size: 4.0vh;
@@ -148,6 +171,7 @@ body {
 	font-size: 2.0vh;
 }
 
+/* Hand description and left border on table */
 #history td:first-child {
 	border-left: solid black;
 	border-left-width: 1px; /* For browsers without viewport sizing, this is about the same at 1080p */
@@ -158,20 +182,24 @@ body {
 	width: 100%;
 }
 
+/* Right border on table */
 #history td:last-child {
 	border-right: solid black;
 	border-right-width: 1px; /* For browsers without viewport sizing, this is about the same at 1080p */
 	border-right-width: 0.2vh;
 }
 
+/* Selected hands */
 tr.selected {
 	background-color: lightgrey;
 }
 
+/* Buttons in selected hands */
 tr.selected button {
 	display:none;
 }
 
+/* The hand editor in the lower part of the second column */
 #buttons {
 	width: 90%;
 	height: 50%;
@@ -201,6 +229,7 @@ tr.selected button {
 	font-family: sans-serif;
 }
 
+/* Dropdowns for honours and doubles */
 #buttons select {
 	font-size: 1.8em; /* For browsers without viewport sizing, this is about the same at 1080p */
 	font-size: 3.0vh;
@@ -215,6 +244,7 @@ button.selected {
 	background-color: skyblue;
 }
 
+/* Tricks won */
 #result {
 	width: 70%;
 	font-family: monospace;

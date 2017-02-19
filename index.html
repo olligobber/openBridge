@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+
 <!--
 	Copyright 2017 olligobber
 
@@ -14,13 +16,44 @@
 	limitations under the License.
 -->
 
+<!--
+	This project provides a scorepad for rubber bridge, intended to be used on
+	any device, and is currently hosted at
+
+		https://github.com/olligobber/openBridge
+
+	Go to the github page to report any bugs and contribute to the project.
+
+	This page provides the layout and basic skeleton for an openBridge scorepad.
+
+	This page relies heavily on style.css to be displayed correctly, and on
+	main.js and hand.js for functionality. At the bottom of the document is a
+	script to verify that correct versions of these javascript files are loaded.
+
+	The page is organised into columns, which on a portrait oriented device
+	would each fill the screen and be switched between.
+
+	The leftmost column, contained in div.scorepad, is modelled after the
+	following scorepad layout:
+
+		https://en.wikipedia.org/wiki/Bridge_scoring#Rubber_bridge
+
+	The second column, contained in div.hands, allows for managing the hands
+	to be scored. At the top of this column, div.history shows a list of hands,
+	each with a button to be edited or deleted, and a button to add a new hand.
+	At the bottom is a set of buttons for editing a hand, including from top to
+	bottom, the hand's declarer or whether all players passed, the level bid,
+	the suit bid, the number of tricks won, doubling and honours bonuses, and
+	finally buttons to submit the hand or revert changes.
+-->
+
 <html>
 	<head>
 		<link rel=stylesheet href="style.css">
 	</head>
 	<body>
 		<noscript>
-			<h1>Please enable scripting to use this scorepad</h1>
+			<h1>Please enable scripting/javascript to use this scorepad</h1>
 		</noscript>
 		<div id=scorepad>
 			<table>
@@ -117,6 +150,7 @@
 		</div>
 		<script src="js/hand.js"></script>
 		<script src="js/main.js"></script>
+		<!-- The following script prevents issues with browser caches -->
 		<script>
 			if (typeof main_js_version == "undefined" || typeof hand_js_version == "undefined") {
 				document.body.innerHTML = "<h1>Javascript files were not loaded. Please report this bug.</h1>";
