@@ -20,7 +20,7 @@ if (typeof hand_js_version == "undefined") {
 	console.error("main.js detected that hand.js was not loaded");
 }
 
-if (hand_js_version != "1.1") {
+if (hand_js_version != "1.1.1") {
 	console.error("main.js detected that the current version of hand.js was not correctly loaded");
 }
 

@@ -14,7 +14,7 @@
 	limitations under the License.
 */
 
-var hand_js_version = "1.1"
+var hand_js_version = "1.1.1"
 
 var suit = {
 
@@ -103,7 +103,7 @@ function Hand() {
 				this.scoreAbove += 50 * (this.honours - 2);
 			}
 			else { // Opposition has honours
-				this.scoreOpponent += 50 * (2 - this.honours);
+				this.scoreOpponent += 50 * (-this.honours - 2);
 			}
 		}
 		return true;
