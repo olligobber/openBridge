@@ -27,7 +27,7 @@
 	management and scoring.
 */
 
-var main_js_version = "1.0.3" // To avoid cache issues, this can be checked by other files that use main.js
+var main_js_version = "1.1" // To avoid cache issues, this can be checked by other files that use main.js
 
 // Check that hand.js was loaded
 if (typeof hand_js_version == "undefined") {
@@ -55,41 +55,66 @@ suit.NoTrumps.symbol = '\\';
 suit.NoTrumps.element = document.getElementById('suit').children[4].children[0];
 
 /*
-	Contains 4 objects for each of the players. Each contains the html element
-	for their button in the hand editor, their symbol for the hand name, their
-	team and their opponent's team.
+	Contains 4 objects for each of the players, a null player and a list of the
+	player objects. Each player object contains the html element for their
+	button in the hand editor, their symbol for the hand name, a longer name,
+	their team, their opponent's team, a multiplier for their team when saving
+	honours bonuses, and an index for their position in the list.
 */
 var players = {
 
 	North : {
 		element : document.getElementById('declarer').children[0].children[0],
 		symbol : 'N',
+		name: 'North',
 		team : 'we',
-		opponent : 'they'
+		opponent : 'they',
+		multiplier : 1,
+		index : 0
 	},
 
 	East : {
 		element : document.getElementById('declarer').children[1].children[0],
 		symbol : 'E',
+		name: 'East',
 		team : 'they',
-		opponent : 'we'
+		opponent : 'we',
+		multiplier: -1,
+		index : 1
 	},
 
 	South : {
 		element : document.getElementById('declarer').children[2].children[0],
 		symbol : 'S',
+		name: 'South',
 		team : 'we',
-		opponent : 'they'
+		opponent : 'they',
+		multiplier : 1,
+		index : 2
 	},
 
 	West : {
 		element : document.getElementById('declarer').children[3].children[0],
 		symbol : 'W',
+		name: 'West',
 		team : 'they',
-		opponent : 'we'
+		opponent : 'we',
+		multiplier : -1,
+		index : 3
+	},
+
+	None : {
+		element : null,
+		symbol : null,
+		name : null,
+		team : null,
+		opponent : null,
+		multiplier : 0,
+		index : null
 	}
 
 };
+players.list = [players.North, players.East, players.South, players.West];
 
 // Elements of index.html for use throughout the rest of the script
 var elements = {
@@ -173,7 +198,7 @@ Hand.prototype.render = function() {
 	if (this.allPass) {
 		return "AP";
 	}
-	if (this.declarer != null && this.score()) {
+	if (this.declarer != players.None && this.score()) {
 		var out = this.declarer.symbol + this.level + this.suit.symbol;
 		if (this.double > 1) {
 			out += "X";
@@ -198,7 +223,7 @@ Hand.prototype.render = function() {
 // Some added default values for hands
 Hand.prototype.index = null; // The index of this hand (or its most recently submitted version) in scorepad.allHands
 Hand.prototype.element = null; // The element for this hand on index.html
-Hand.prototype.declarer = null; // The hand's declarer (Any player object)
+Hand.prototype.declarer = players.None; // The hand's declarer (Any player object)
 Hand.prototype.allPass = false; // Whether all players passed or not
 
 /*
@@ -242,7 +267,7 @@ var scorepad = {
 			if (this.currentHand.suit != null) {
 				this.currentHand.suit.element.className = "";
 			}
-			if (this.currentHand.declarer != null) {
+			if (this.currentHand.declarer != players.None) {
 				this.currentHand.declarer.element.className = "";
 			}
 		}
@@ -424,17 +449,7 @@ var scorepad = {
 
 			// Update values from dropdowns
 			this.currentHand.double = parseInt(elements.double.value);
-			this.currentHand.honours = parseInt(elements.honours.value);
-
-			// Honours cannot be recorded properly with no declarer
-			if (this.currentHand.allPass && this.currentHand.declarer == null) {
-				this.currentHand.honours = 0;
-			}
-
-			// Negatives are reversed when "they" are declarer
-			else if (this.currentHand.declarer.team == "they") {
-				this.currentHand.honours = - this.currentHand.honours;
-			}
+			this.currentHand.honours = this.currentHand.declarer.multiplier * parseInt(elements.honours.value);
 
 			// Update hand's description
 			this.currentHand.element.children[0].innerHTML = this.currentHand.render();
@@ -474,23 +489,9 @@ var scorepad = {
 			this.currentHand.suit.element.className = 'selected';
 		}
 
-		// Update doubles dropdown
+		// Update doubles and honours dropdowns
 		elements.double.value = this.currentHand.double;
-
-		// A hand with no declarer cannot have an honours bonus
-		if (this.currentHand.allPass && this.currentHand.declarer == null) {
-			elements.honours.value = 0;
-		}
-
-		// Update the honours dropdown
-		else if (this.currentHand.declarer.team == 'we') {
-			elements.honours.value = this.currentHand.honours;
-		}
-
-		// Update the honours dropdown, with negatives swapped if "they" are declarer
-		else {
-			elements.honours.value = - this.currentHand.honours;
-		}
+		elements.honours.value = this.currentHand.declarer.multiplier * this.currentHand.honours;
 
 		this.updateResult();
 
@@ -506,7 +507,7 @@ var scorepad = {
 			elements.allPass.className = 'selected'; // Select the all pass button
 
 			// Deselect other buttons
-			if (this.currentHand.declarer != null) {
+			if (this.currentHand.declarer != players.None) {
 				this.currentHand.declarer.element.className = '';
 			}
 			if (this.currentHand.level != null) {
@@ -529,7 +530,7 @@ var scorepad = {
 			elements.allPass.className = ''; // Deslect the all psss button
 
 			// Select buttons that were selected before all pass was turned on
-			if (this.currentHand.declarer != null) {
+			if (this.currentHand.declarer != players.None) {
 				this.currentHand.declarer.element.className = 'selected';
 			}
 			if (this.currentHand.level != null) {
@@ -549,7 +550,7 @@ var scorepad = {
 		this.allPassOff(); // An all pass hand cannot have a declarer, so turn off all pass
 
 		// Deselect the previous declarer
-		if (this.currentHand.declarer != null) {
+		if (this.currentHand.declarer != players.None) {
 			this.currentHand.declarer.element.className = '';
 		}
 
