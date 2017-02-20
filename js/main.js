@@ -27,7 +27,7 @@
 	management and scoring.
 */
 
-var main_js_version = "1.1" // To avoid cache issues, this can be checked by other files that use main.js
+var main_js_version = "1.2" // To avoid cache issues, this can be checked by other files that use main.js
 
 // Check that hand.js was loaded
 if (typeof hand_js_version == "undefined") {
