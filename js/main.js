@@ -156,7 +156,13 @@ var elements = {
 	total : {
 		we : document.getElementById("total").children[0],
 		they : document.getElementById("total").children[1]
-	}
+	},
+
+	// Dropdown for selecting the first dealer
+	firstDealer : document.getElementById("firstDealer"),
+
+	// Where the current dealer is shown
+	dealer : document.getElementById("dealer")
 
 };
 
@@ -235,6 +241,20 @@ var scorepad = {
 	allHands : [], // All hands submitted to the scorepad
 	handCount : 0, // The number of non-null elements in allHands
 	scoreElements : [], // The elements of scores below the line
+
+	// Updates the current dealer
+	updateDealer : function() {
+
+		// No first dealer selected so clear the current dealer
+		if (elements.firstDealer.value == -1) {
+			elements.dealer.style.display = "none";
+		}
+
+		else {
+			elements.dealer.style.display = "";
+			elements.dealer.innerHTML = players.list[(parseInt(elements.firstDealer.value) + this.handCount) % 4].name + " will deal next";
+		}
+	},
 
 	// Clears out any hand currently being edited, after or without submitting it
 	clearHand : function() {
@@ -420,8 +440,8 @@ var scorepad = {
 	newHand : function() {
 		this.clearHand();
 		this.currentHand = new Hand();
-		elements.history.insertBefore(elt("tr", elt("td"), elt("td", elt("button", "Edit")), elt("td", elt("button", "Delete"))), elements.history.children[1]); // Insert hand's element
-		this.currentHand.element = elements.history.children[1];
+		elements.history.insertBefore(elt("tr", elt("td"), elt("td", elt("button", "Edit")), elt("td", elt("button", "Delete"))), elements.history.children[2]); // Insert hand's element
+		this.currentHand.element = elements.history.children[2];
 		this.currentHand.element.className = 'selected';
 		this.currentHand.element.getElementsByTagName('button')[0].setAttribute('type', 'button');
 		this.currentHand.element.getElementsByTagName('button')[1].setAttribute('type', 'button');
@@ -439,6 +459,8 @@ var scorepad = {
 		if (this.handCount == 0) {
 			this.allHands = [];
 		}
+
+		this.updateDealer();
 	},
 
 	// Submit the hand currently being edited and close the hand editor
@@ -458,6 +480,7 @@ var scorepad = {
 			if (this.currentHand.index == null) {
 				this.currentHand.index = this.allHands.length;
 				this.allHands.push(this.currentHand);
+				this.handCount++;
 				this.currentHand.element.getElementsByTagName('button')[0].setAttribute('onClick', 'scorepad.editHand(' + this.currentHand.index + ');');
 				this.currentHand.element.getElementsByTagName('button')[1].setAttribute('onClick', 'scorepad.removeHand(' + this.currentHand.index + ');');
 			}
@@ -467,6 +490,7 @@ var scorepad = {
 
 			this.clearHand();
 			this.updateScores();
+			this.updateDealer();
 		}
 
 	},

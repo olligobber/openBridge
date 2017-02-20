@@ -189,6 +189,12 @@ body {
 	border-right-width: 0.2vh;
 }
 
+#history #dealer {
+	font-family: sans-serif;
+	text-align: center;
+	border-width: 0px;
+}
+
 /* Selected hands */
 tr.selected {
 	background-color: lightgrey;
@@ -229,8 +235,8 @@ tr.selected button {
 	font-family: sans-serif;
 }
 
-/* Dropdowns for honours and doubles */
-#buttons select {
+/* Dropdowns */
+select {
 	font-size: 1.8em; /* For browsers without viewport sizing, this is about the same at 1080p */
 	font-size: 3.0vh;
 	text-align: center;
