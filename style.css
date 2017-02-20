@@ -29,7 +29,7 @@ body {
 	font-family: sans-serif;
 	font-size: 1.8em; /* For browsers without viewport sizing, this is about the same at 1080p */
 	font-size: 3.0vh;
-	height: 90%; /* To prevent scrollbars */
+	height: 90vh; /* To prevent scrollbars */
 }
 
 @media (orientation: portrait) {
