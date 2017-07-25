@@ -144,13 +144,14 @@ button:hover {
 /* The list of hands in the top part of the second column */
 #history {
 	width: 90%;
-	height: 45%;
+	height: 90%;
 	margin: 5%;
 	overflow-y: scroll;
 	border: solid rgb(39,44,53);
 	border-width: 2px; /* For browsers without viewport sizing, this is about the same at 1080p */
 	border-width: 0.3vh;
 	padding: 0.5%;
+	transition: height 1s;
 }
 
 #history table {
