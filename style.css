@@ -30,12 +30,30 @@ body {
 	font-size: 1.8em; /* For browsers without viewport sizing, this is about the same at 1080p */
 	font-size: 3.0vh;
 	height: 90vh; /* To prevent scrollbars */
+	color: rgb(39,44,53);
 }
 
 @media (orientation: portrait) {
 	body {
 		width:200%; /* So each column occupies the entire screen */
 	}
+}
+
+/* Moku's modification */
+
+button {
+	border: none!important;
+	transition: opacity 1s;
+	border-radius: 5px;
+	color:white;
+}
+
+button:hover {
+	opacity: 0.5;
+}
+
+#firstDealer, #double, #honours {
+	border:none;
 }
 
 /* The leftmost column */
@@ -71,7 +89,7 @@ body {
 /* The "we" side of the scorepad */
 #scorepad td:first-child,
 #scorepad th:first-child {
-	border-right: solid black;
+	border-right: solid rgb(39,44,53);
 	border-right-width: 2px; /* For browsers without viewport sizing, this is about the same at 1080p */
 	border-right-width: 0.3vh;
 	width: 50%;
@@ -90,21 +108,21 @@ body {
 
 /* Line below the titles of the columns */
 #scorepad thead tr {
-	border-bottom: solid black;
+	border-bottom: solid rgb(39,44,53);
 	border-bottom-width: 2px; /* For browsers without viewport sizing, this is about the same at 1080p */
 	border-bottom-width: 0.3vh;
 }
 
 /* Line above the totals */
 #total {
-	border-top: solid black;
+	border-top: solid rgb(39,44,53);
 	border-top-width: 2px; /* For browsers without viewport sizing, this is about the same at 1080p */
 	border-top-width: 0.3vh;
 }
 
 /* Scores above the line */
 #above {
-	border-bottom: solid black;
+	border-bottom: solid rgb(39,44,53);
 	border-bottom-width: 2px; /* For browsers without viewport sizing, this is about the same at 1080p */
 	border-bottom-width: 0.3vh;
 	height: 50%;
@@ -113,7 +131,7 @@ body {
 
 /* A line below games */
 .game {
-	border-bottom: solid black;
+	border-bottom: solid rgb(39,44,53);
 	border-bottom-width: 2px; /* For browsers without viewport sizing, this is about the same at 1080p */
 	border-bottom-width: 0.3vh;
 }
@@ -129,7 +147,7 @@ body {
 	height: 45%;
 	margin: 5%;
 	overflow-y: scroll;
-	border: solid black;
+	border: solid rgb(39,44,53);
 	border-width: 2px; /* For browsers without viewport sizing, this is about the same at 1080p */
 	border-width: 0.3vh;
 	padding: 0.5%;
@@ -156,7 +174,7 @@ body {
 #history td {
 	height: 1.4em; /* For browsers without viewport sizing, this is about the same at 1080p */
 	height: 4.0vh;
-	border: solid black;
+	border: solid rgb(39,44,53);
 	border-width: 1px; /* For browsers without viewport sizing, this is about the same at 1080p */
 	border-width: 0.2vh;
 	padding: 0.5%;
@@ -173,7 +191,7 @@ body {
 
 /* Hand description and left border on table */
 #history td:first-child {
-	border-left: solid black;
+	border-left: solid rgb(39,44,53);
 	border-left-width: 1px; /* For browsers without viewport sizing, this is about the same at 1080p */
 	border-left-width: 0.2vh;
 	font-family: monospace;
@@ -184,7 +202,7 @@ body {
 
 /* Right border on table */
 #history td:last-child {
-	border-right: solid black;
+	border-right: solid rgb(39,44,53);
 	border-right-width: 1px; /* For browsers without viewport sizing, this is about the same at 1080p */
 	border-right-width: 0.2vh;
 }
@@ -197,7 +215,7 @@ body {
 
 /* Selected hands */
 tr.selected {
-	background-color: lightgrey;
+	background-color: rgb(39,44,53);
 }
 
 /* Buttons in selected hands */
@@ -243,11 +261,11 @@ select {
 }
 
 button {
-	background-color: lightgrey;
+	background-color: rgb(39,44,53);
 }
 
 button.selected {
-	background-color: skyblue;
+	background-color: rgb(0,138,205);
 }
 
 /* Tricks won */
