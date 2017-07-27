@@ -296,6 +296,8 @@ var scorepad = {
 		elements.honours.value = 0; // Reset the honours dropdown
 		elements.result.innerHTML = ""; // Clear the hand result
 		this.currentHand = null; // Delete the unsubmitted hand
+		// Minimise the History Div
+		document.getElementById('history').style.height = '90%';
 	},
 
 	// Update the result element
