@@ -46,10 +46,6 @@ body {
 button {
 	border: none!important;
 	transition: opacity 1s;
-	-webkit-transition: opacity 1s;  // For Webkit browser(Chrome, Safari...)
-	-moz-transition: opacity 1s;     // For Mozilla browser
-	-o-transition: opacity 1s;       // For Opera browser
-	-ms-transition: opacity 1s;      // For Microsoft browser
 	border-radius: 5px;
 	color:white;
 }
@@ -159,10 +155,6 @@ button:hover {
 	border-width: 0.3vh;
 	padding: 0.5%;
 	transition: height 1s;
-	-webkit-transition: height 1s;  // For Webkit browser(Chrome, Safari...)
-	-moz-transition: height 1s;     // For Mozilla browser
-	-o-transition: height 1s;       // For Opera browser
-	-ms-transition: height 1s;      // For Microsoft browser
 }
 
 #history table {
