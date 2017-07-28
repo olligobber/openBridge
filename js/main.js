@@ -523,6 +523,7 @@ var scorepad = {
 		this.updateResult();
 
 		elements.buttons.style.display = null; // Show the hand editor buttons
+		document.getElementById('history').style.height = '45%';
 	},
 
 	// Set the all pass flag to true and update button selections accordingly
