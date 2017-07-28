@@ -447,7 +447,7 @@ var scorepad = {
 		this.currentHand.element.className = 'selected';
 		this.currentHand.element.getElementsByTagName('button')[0].setAttribute('type', 'button');
 		this.currentHand.element.getElementsByTagName('button')[1].setAttribute('type', 'button');
-		document.getElementById('history').style.height = '45%';
+		document.getElementById('history').style.height = '45vh';
 		elements.buttons.style.display = null; // Show hand editor
 	},
 
