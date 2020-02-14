@@ -222,10 +222,10 @@ type Errors = Array String
 
 -- Assign scores to a hand given all details of the hand
 scoreHand' :: Char -> Team -> Suit -> Level -> Maybe Tricks -> Honours ->
-    Doubled -> V Errors (TeamValue Boolean -> List (ScoreEntry String))
+    Doubled -> Either Errors (TeamValue Boolean -> List (ScoreEntry String))
 scoreHand' declarer team suit level tricks hons doubled
-    | not $ validHons hons suit = V $ Left ["Invalid choice of Honours for this Suit"]
-    | otherwise = V $ Right $ \vuln -> let
+    | not $ validHons hons suit = Left ["Invalid choice of Honours for this Suit"]
+    | otherwise = Right $ \vuln -> let
         -- Name of contract, used for tags
         contract = renderContract {
             declarer : Just declarer,
@@ -302,7 +302,7 @@ scoreHand' declarer team suit level tricks hons doubled
         underPoints 0 tot = tot -- base case, return running total
         underPoints x tot
             | doubled /= Undoubled && x >= 4 = underPoints (x-1) $
-                -- 4th and later are worth 300 doubled, 600 undoubled
+                -- 4th and later are worth 300 doubled, 600 redoubled
                 tot + 150 * doubleFactor doubled
             | doubled /= Undoubled && x >= 2 && vulnerable = underPoints (x-1) $
                 -- 2nd and 3rd are worth 300 doubled, 600 redoubled, when declarer is vulnerable
@@ -331,11 +331,11 @@ withError :: forall a b. Maybe a -> b -> V (Array b) a
 withError Nothing e = V $ Left [e]
 withError (Just x) _ = V $ Right x
 
--- Get a score generator for a hand, or errors if the hand cannot be score
+-- Get a score generator for a hand, or errors if the hand cannot be scored
 scoreHand :: Hand -> Either Errors (TeamValue Boolean -> List (ScoreEntry String))
 scoreHand hand
     | hand.allPass = pure $ const Nil
-    | otherwise = join $ V.toEither $ V.toEither <$> scores
+    | otherwise = join $ V.toEither scores
     where
         scores = scoreHand'
             <$> (hand.declarer `withError` "Declarer was not chosen")
