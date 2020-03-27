@@ -1,3 +1,3 @@
 make:
-	spago build
+	spago bundle-app
 	spago test

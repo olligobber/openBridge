@@ -22,7 +22,7 @@ module Hand (
 ) where
 
 import Prelude (class Eq, const, between, otherwise, show, pure, not, join,
-    ($), (&&), (+), (*), (-), (>=), (==), (/=), (<>), (<$>), (<@>), (<*>))
+    ($), (&&), (+), (*), (-), (>=), (==), (/=), (<>), (<$>), (<@>), (<*>), (<=))
 import Data.Maybe (Maybe(..))
 import Data.Maybe (maybe) as Maybe
 import Data.Either (Either(..))
@@ -31,18 +31,18 @@ import Data.String.CodeUnits (singleton) as String
 import Data.String.Utils (padStart, padEnd) as String
 import Data.Validation.Semigroup (V(..))
 import Data.Validation.Semigroup (toEither) as V
-import Score (ScoreEntry, Team, opposition, getTeam, TeamValue)
+import Score (ScoreEntry, Team, opposition, getTeam, Vulnerability)
 
 -- 5 Possible Suit Bids
 data Suit = Clubs | Diamonds | Hearts | Spades | NoTrumps
 
 -- Render a suit
 showSuit :: Suit -> String
-showSuit Clubs = "&clubs;"
-showSuit Diamonds = "&diams;"
-showSuit Hearts = "&hearts;"
-showSuit Spades = "&spades;"
-showSuit NoTrumps = "\\"
+showSuit Clubs = "♣"
+showSuit Diamonds = "♦"
+showSuit Hearts = "♥"
+showSuit Spades = "♠"
+showSuit NoTrumps = "🚫"
 
 -- Classification of suits by point value
 data SuitType = Minor | Major | NT
@@ -211,7 +211,7 @@ renderHand :: Hand -> String
 renderHand hand | hand.allPass = "AP"
                 | otherwise =
     contract <> results <> honours where
-        contract = String.padEnd 6 $ renderContract hand
+        contract = String.padEnd 5 $ renderContract hand
         results = String.padStart 3 $ Maybe.maybe "" renderResult $
             result <$> hand.level <@> hand.tricks
         honours = case hand.honours of
@@ -222,9 +222,10 @@ type Errors = Array String
 
 -- Assign scores to a hand given all details of the hand
 scoreHand' :: Char -> Team -> Suit -> Level -> Maybe Tricks -> Honours ->
-    Doubled -> Either Errors (TeamValue Boolean -> List (ScoreEntry String))
+    Doubled -> Either Errors (Vulnerability -> List (ScoreEntry String))
 scoreHand' declarer team suit level tricks hons doubled
-    | not $ validHons hons suit = Left ["Invalid choice of Honours for this Suit"]
+    | not $ validHons hons suit =
+        Left ["Invalid choice of Honours for this Suit"]
     | otherwise = Right $ \vuln -> let
         -- Name of contract, used for tags
         contract = renderContract {
@@ -238,9 +239,11 @@ scoreHand' declarer team suit level tricks hons doubled
         below = pure {
             team,
             below : true,
-            -- Points below are simply suit value * amount * doubling, except notrumps adds 10 points
-            amount : doubleFactor doubled * (levelnum * suitValue (suitType suit)
-                + bonusValue (suitType suit)),
+            {-  Points below are simply suit value * amount * doubling, except
+                notrumps adds 10 points -}
+            amount : doubleFactor doubled *
+                (levelnum * suitValue (suitType suit) +
+                    bonusValue (suitType suit)),
             source : "Won " <> contract
         }
         overBonus x
@@ -250,23 +253,27 @@ scoreHand' declarer team suit level tricks hons doubled
                     below : false,
                     -- Undoubled overtricks are simply suit value * amount
                     amount : x * suitValue (suitType suit),
-                    source : contract <> " with " <> show x <> " overtricks"
+                    source : contract <> " with " <> show x <> " overtrick(s)"
                 }
             | vulnerable = pure {
                     team,
                     below : false,
-                    -- Vulnerable overtricks are 200 each doubled, 400 each redoubled
+                    {-  Vulnerable overtricks are 200 each doubled,
+                        400 each redoubled -}
                     amount : 100 * doubleFactor doubled * x,
-                    source : contract <> " with " <> show x <> " overtricks and vulnerable"
+                    source : contract <> " with " <> show x <>
+                        " overtrick(s) and vulnerable"
                 }
             | otherwise = pure {
                     team,
                     below : false,
-                    -- Not vulnerable overtricks are 100 each doubled, 200 each redoubled
+                    {-  Not vulnerable overtricks are 100 each doubled,
+                        200 each redoubled -}
                     amount : 50 * doubleFactor doubled * x,
-                    source : contract <> " with " <> show x <> " overtricks"
+                    source : contract <> " with " <> show x <> " overtrick(s)"
                 }
-        insult -- Bonus of 50 points for winning a doubled contract, 100 for redoubled
+        -- Bonus of 50 points for winning a doubled contract, 100 for redoubled
+        insult
             | doubled == Undoubled = Nil
             | otherwise = pure {
                     team,
@@ -278,50 +285,67 @@ scoreHand' declarer team suit level tricks hons doubled
             | levelnum >= 6 && vulnerable = pure {
                     team,
                     below : false,
-                    -- Vulnerable slams are 750 for baby slam and 1500 for grand slam
+                    -- Vulnerable slams are 750 for baby and 1500 for grand
                     amount : 750 * (levelnum - 5),
                     source : contract <> " slam bonus and vulnerable"
                 }
             | levelnum >= 6 = pure {
                     team,
                     below : false,
-                    -- Not vulnerable slams are 500 for baby slam and 1000 for grand slam
+                    -- Not vulnerable slams are 500 for baby and 1000 for grand
                     amount : 500 * (levelnum - 5),
                     source : contract <> " slam bonus"
                 }
             | otherwise = Nil -- Didn't bid 6 or 7, no slam
         honours = case hons of
             None -> Nil
-            Hons honsteam honstype -> pure {
+            Hons honsteam Four -> pure {
                     team : honsteam,
                     below : false,
-                    amount : honoursValue honstype,
-                    source : contract <> " honours"
+                    amount : honoursValue Four,
+                    source : contract <> " honours (4 out of 5)"
+                }
+            Hons honsteam Five -> pure {
+                    team : honsteam,
+                    below : false,
+                    amount : honoursValue Five,
+                    source : contract <> " honours (5 out of 5)"
+                }
+            Hons honsteam Aces -> pure {
+                    team : honsteam,
+                    below : false,
+                    amount : honoursValue Aces,
+                    source : contract <> " honours (aces)"
                 }
         -- calculate points for undertricks with tail call recursion
-        underPoints 0 tot = tot -- base case, return running total
         underPoints x tot
+            | x <= 0 = tot -- base case, return running total
             | doubled /= Undoubled && x >= 4 = underPoints (x-1) $
                 -- 4th and later are worth 300 doubled, 600 redoubled
                 tot + 150 * doubleFactor doubled
             | doubled /= Undoubled && x >= 2 && vulnerable = underPoints (x-1) $
-                -- 2nd and 3rd are worth 300 doubled, 600 redoubled, when declarer is vulnerable
+                {-  2nd and 3rd are worth 300 doubled, 600 redoubled,
+                    when declarer is vulnerable -}
                 tot + 150 * doubleFactor doubled
             | doubled /= Undoubled && x >= 2 = underPoints (x-1) $
-                -- 2nd and 3rd are worth 200 doubled, 400 redoubled, when declarer is not vulnerable
+                {-  2nd and 3rd are worth 200 doubled, 400 redoubled,
+                    when declarer is not vulnerable -}
                 tot + 100 * doubleFactor doubled
-            -- 1st is worth 200 doubled, 400 redoubled, and all undoubled are worth 100, when declarer is vulnerable
+            {-  1st is worth 200 doubled, 400 redoubled,
+                and all undoubled are worth 100, when declarer is vulnerable -}
             | vulnerable = tot + 100 * doubleFactor doubled * x
-            -- 1st is worth 100 doubled, 200 redoubled, and all undoubled are worth 50, when declarer is not vulnerable
+            {-  1st is worth 100 doubled, 200 redoubled, and
+                all undoubled are worth 50, when declarer is not vulnerable -}
             | otherwise = tot + 50 * doubleFactor doubled * x
         unders x = pure {
             team : opposition team,
             below : false,
             amount : underPoints x 0,
-            source : "Lost " <> contract <> " with " <> show x <> " undertricks"
+            source : "Lost " <> contract <> " with " <> show x <> " undertrick(s)"
         }
     in case result level tricks of
-        -- If contract won, give points for the contract, overtricks, insult bonus, slam bonus, and honours
+        {-  If contract won, give points for the contract, overtricks,
+            insult bonus, slam bonus, and honours -}
         WonBy over -> below <> overBonus over <> insult <> slam <> honours
         -- If contract lost, give points for the undertricks and honours
         LostBy under -> unders under <> honours
@@ -332,7 +356,7 @@ withError Nothing e = V $ Left [e]
 withError (Just x) _ = V $ Right x
 
 -- Get a score generator for a hand, or errors if the hand cannot be scored
-scoreHand :: Hand -> Either Errors (TeamValue Boolean -> List (ScoreEntry String))
+scoreHand :: Hand -> Either Errors (Vulnerability -> List (ScoreEntry String))
 scoreHand hand
     | hand.allPass = pure $ const Nil
     | otherwise = join $ V.toEither scores
@@ -342,6 +366,7 @@ scoreHand hand
             <*> (hand.team `withError` "Declarer's team was not set")
             <*> (hand.suit `withError` "Bid suit was not chosen")
             <*> (hand.level `withError` "Bid level was not chosen")
-            <@> hand.tricks -- Default is for contract to be won with no overtricks
+            -- Default is for contract to be won with no overtricks
+            <@> hand.tricks
             <*> (hand.honours `withError` "Honours has not been selected")
             <@> hand.doubled -- Default is undoubled

@@ -5,18 +5,24 @@ module Score (
     startTeams,
     getTeam,
     adjustTeam,
+    Vulnerability,
     ScoreEntry,
     ScoreTotal,
     scoreAll
 ) where
 
-import Prelude (not, otherwise, (&&), (>=), (+), ($))
+import Prelude (class Eq, class Show, not, otherwise, (&&), (>=), (+), ($))
 import Data.Maybe (Maybe(..))
 import Data.List (List(..), (:))
 import Data.List (reverse) as List
 import Data.Foldable (class Foldable, foldl)
 
 data Team = We | They
+
+derive instance eqTeam :: Eq Team
+instance showTeam :: Show Team where
+    show We = "We"
+    show They = "They"
 
 opposition :: Team -> Team
 opposition We = They
@@ -39,6 +45,8 @@ adjustTeam :: forall t. (t -> t) -> Team -> TeamValue t -> TeamValue t
 adjustTeam f We teamvalue = teamvalue { we = f teamvalue.we }
 adjustTeam f They teamvalue = teamvalue { they = f teamvalue.they }
 
+type Vulnerability = TeamValue Boolean
+
 -- A tagged entry on the scorepad
 type ScoreEntry s = {
     team :: Team, -- Which team the score is given to
@@ -49,7 +57,7 @@ type ScoreEntry s = {
 
 -- Current state of the scoreboard
 type ScoreTotal = {
-    vulnerable :: TeamValue Boolean, -- Who is vulnerable
+    vulnerable :: Vulnerability, -- Who is vulnerable
     below :: TeamValue Int, -- Total below the lowest line
     total :: TeamValue Int -- Total on the whole scorepad
 }
@@ -84,8 +92,8 @@ rubberBonus rbsource total entry = bonus where
     decVuln = getTeam entry.team total.vulnerable
     oppVuln = getTeam (opposition entry.team) total.vulnerable
     amount
-        | oppVuln   = 700
-        | otherwise = 500
+        | oppVuln   = 500
+        | otherwise = 700
 
 -- The state of the function to iteratively get all scores
 type TotalState s = {
@@ -146,13 +154,13 @@ scoreEntry state entry = case rubberBonus state.rbsource state.totals entry of
 
 -- Add scores from a single generating function to the state
 scoreStep :: forall f s. Foldable f =>
-    TotalState s -> (TeamValue Boolean -> f (ScoreEntry s)) -> TotalState s
+    TotalState s -> (Vulnerability -> f (ScoreEntry s)) -> TotalState s
 scoreStep state gen =
     foldl scoreEntry state $ gen state.totals.vulnerable
 
 -- Add scores from a list of generating functions to the scorepad
 scoreAll :: forall f s. Foldable f =>
-    s -> f (TeamValue Boolean -> f (ScoreEntry s)) ->
+    s -> f (Vulnerability -> f (ScoreEntry s)) ->
     {entries :: List (Maybe (ScoreEntry s)), totals :: ScoreTotal}
 scoreAll rbsource list = {
         entries : List.reverse foldres.entries,
