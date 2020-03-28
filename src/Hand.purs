@@ -5,6 +5,8 @@ module Hand (
     toLevel,
     Tricks,
     toTricks,
+    defaultTricks,
+    fromTricks,
     HonoursType(..),
     Honours(..),
     Doubled(..),
@@ -78,6 +80,12 @@ newtype Tricks = Tricks Int
 toTricks :: Int -> Maybe Tricks
 toTricks x  | between 0 13 x    = Just $ Tricks x
             | otherwise         = Nothing
+
+defaultTricks :: Level -> Tricks
+defaultTricks (Level x) = Tricks (x+6)
+
+fromTricks :: Tricks -> Int
+fromTricks (Tricks x) = x
 
 -- Result of a hand
 data Result = WonBy Int | LostBy Int
