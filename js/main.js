@@ -296,6 +296,8 @@ var scorepad = {
 		elements.honours.value = 0; // Reset the honours dropdown
 		elements.result.innerHTML = ""; // Clear the hand result
 		this.currentHand = null; // Delete the unsubmitted hand
+		// Minimise the History Div
+		document.getElementById('history').style.height = '90%';
 	},
 
 	// Update the result element
@@ -439,12 +441,13 @@ var scorepad = {
 	// Add a new hand and open the hand editor
 	newHand : function() {
 		this.clearHand();
-		this.currentHand = new Hand();
+		this.currentHand = new Hand()
 		elements.history.insertBefore(elt("tr", elt("td"), elt("td", elt("button", "Edit")), elt("td", elt("button", "Delete"))), elements.history.children[2]); // Insert hand's element
 		this.currentHand.element = elements.history.children[2];
 		this.currentHand.element.className = 'selected';
 		this.currentHand.element.getElementsByTagName('button')[0].setAttribute('type', 'button');
 		this.currentHand.element.getElementsByTagName('button')[1].setAttribute('type', 'button');
+		document.getElementById('history').style.height = '45%';
 		elements.buttons.style.display = null; // Show hand editor
 	},
 
@@ -487,7 +490,7 @@ var scorepad = {
 			else {
 				this.allHands[this.currentHand.index] = this.currentHand;
 			}
-
+			document.getElementById('history').style.height = '90%';
 			this.clearHand();
 			this.updateScores();
 			this.updateDealer();
@@ -520,6 +523,7 @@ var scorepad = {
 		this.updateResult();
 
 		elements.buttons.style.display = null; // Show the hand editor buttons
+		document.getElementById('history').style.height = '45%';
 	},
 
 	// Set the all pass flag to true and update button selections accordingly
