@@ -21,6 +21,7 @@ module Hand (
     validHonours,
     setDoubled,
     renderHand,
+    renderHandResult,
     scoreHand
 ) where
 
@@ -238,6 +239,16 @@ renderHand hand | hand.allPass = "AP"
         honours = case hand.honours of
             Just (Hons _ _) -> "h"
             _ -> " "
+
+-- Render the result of a hand with the number of tricks won
+renderHandResult :: Hand -> String
+renderHandResult hand
+    | hand.allPass = "AP"
+    | otherwise = renderHand hand <> case hand.tricks of
+        Just (Tricks x) -> " (" <> show x <> ")"
+        Nothing -> case hand.level of
+            Just (Level x) -> " (" <> show (x+6) <> ")"
+            Nothing -> ""
 
 type Errors = Array String
 

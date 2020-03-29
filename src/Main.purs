@@ -17,9 +17,9 @@ import Halogen.HTML.Properties as HP
 import Halogen.VDom.Driver (runUI)
 import Hand
     (Hand, Suit(..), Doubled(..), Honours(..), HonoursType(..),
-    newHand, renderHand, setDeclarer, setAllPass, toLevel, setLevel, setSuit,
-    toTricks, setTricks, defaultTricks, fromTricks, setDoubled, setHonours,
-    validHonours)
+    newHand, renderHandResult, setDeclarer, setAllPass, toLevel, setLevel,
+    setSuit, toTricks, setTricks, defaultTricks, fromTricks, setDoubled,
+    setHonours, validHonours)
 import Score (Team(..))
 
 data ButtonAction
@@ -115,7 +115,7 @@ renderButtons hand = HH.div
     , HH.div
         [ HP.class_ $ HH.ClassName "render_buttons" ]
         [ button false "-" DecreaseTricks
-        , HH.text $ renderHand hand
+        , HH.text $ renderHandResult hand
         , button false "+" IncreaseTricks
         ]
     , HH.div

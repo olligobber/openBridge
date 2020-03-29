@@ -9354,7 +9354,7 @@ var PS = {};
       if (Data_Boolean.otherwise) {
           return Data_Maybe.Nothing.value;
       };
-      throw new Error("Failed pattern match at Hand (line 86, column 1 - line 86, column 32): " + [ x.constructor.name ]);
+      throw new Error("Failed pattern match at Hand (line 87, column 1 - line 87, column 32): " + [ x.constructor.name ]);
   };
   var toLevel = function (x) {
       if (Data_Ord.between(Data_Ord.ordInt)(1)(7)(x)) {
@@ -9363,7 +9363,7 @@ var PS = {};
       if (Data_Boolean.otherwise) {
           return Data_Maybe.Nothing.value;
       };
-      throw new Error("Failed pattern match at Hand (line 79, column 1 - line 79, column 30): " + [ x.constructor.name ]);
+      throw new Error("Failed pattern match at Hand (line 80, column 1 - line 80, column 30): " + [ x.constructor.name ]);
   };
   var showSuit = function (v) {
       if (v instanceof Clubs) {
@@ -9381,7 +9381,7 @@ var PS = {};
       if (v instanceof NoTrumps) {
           return "\ud83d\udeab";
       };
-      throw new Error("Failed pattern match at Hand (line 46, column 1 - line 46, column 27): " + [ v.constructor.name ]);
+      throw new Error("Failed pattern match at Hand (line 47, column 1 - line 47, column 27): " + [ v.constructor.name ]);
   };
   var setTricks = function (tricks) {
       return function (v) {
@@ -9530,7 +9530,7 @@ var PS = {};
                   return LostBy.create((v + 6 | 0) - v1.value0 | 0);
               };
           };
-          throw new Error("Failed pattern match at Hand (line 100, column 1 - line 100, column 42): " + [ v.constructor.name, v1.constructor.name ]);
+          throw new Error("Failed pattern match at Hand (line 101, column 1 - line 101, column 42): " + [ v.constructor.name, v1.constructor.name ]);
       };
   };
   var renderResult = function (v) {
@@ -9540,7 +9540,7 @@ var PS = {};
       if (v instanceof LostBy) {
           return "-" + Data_Show.show(Data_Show.showInt)(v.value0);
       };
-      throw new Error("Failed pattern match at Hand (line 107, column 1 - line 107, column 33): " + [ v.constructor.name ]);
+      throw new Error("Failed pattern match at Hand (line 108, column 1 - line 108, column 33): " + [ v.constructor.name ]);
   };
   var renderContract = function (contract) {
       var suit = Data_Maybe.maybe(" ")(showSuit)(contract.suit);
@@ -9551,7 +9551,7 @@ var PS = {};
           if (contract.level instanceof Data_Maybe.Just) {
               return Data_Show.show(Data_Show.showInt)(contract.level.value0);
           };
-          throw new Error("Failed pattern match at Hand (line 221, column 13 - line 223, column 37): " + [ contract.level.constructor.name ]);
+          throw new Error("Failed pattern match at Hand (line 222, column 13 - line 224, column 37): " + [ contract.level.constructor.name ]);
       })();
       var doubling = (function () {
           if (contract.doubled instanceof Undoubled) {
@@ -9563,7 +9563,7 @@ var PS = {};
           if (contract.doubled instanceof Redoubled) {
               return "XX";
           };
-          throw new Error("Failed pattern match at Hand (line 225, column 16 - line 228, column 26): " + [ contract.doubled.constructor.name ]);
+          throw new Error("Failed pattern match at Hand (line 226, column 16 - line 229, column 26): " + [ contract.doubled.constructor.name ]);
       })();
       var declarer = Data_Maybe.maybe(" ")(Data_String_CodeUnits.singleton)(contract.declarer);
       return declarer + (level + (suit + doubling));
@@ -9583,7 +9583,30 @@ var PS = {};
           var contract = Data_String_Utils.padEnd(5)(renderContract(hand));
           return contract + (results + honours);
       };
-      throw new Error("Failed pattern match at Hand (line 231, column 1 - line 231, column 29): " + [ hand.constructor.name ]);
+      throw new Error("Failed pattern match at Hand (line 232, column 1 - line 232, column 29): " + [ hand.constructor.name ]);
+  };
+  var renderHandResult = function (hand) {
+      if (hand.allPass) {
+          return "AP";
+      };
+      if (Data_Boolean.otherwise) {
+          return renderHand(hand) + (function () {
+              if (hand.tricks instanceof Data_Maybe.Just) {
+                  return " (" + (Data_Show.show(Data_Show.showInt)(hand.tricks.value0) + ")");
+              };
+              if (hand.tricks instanceof Data_Maybe.Nothing) {
+                  if (hand.level instanceof Data_Maybe.Just) {
+                      return " (" + (Data_Show.show(Data_Show.showInt)(hand.level.value0 + 6 | 0) + ")");
+                  };
+                  if (hand.level instanceof Data_Maybe.Nothing) {
+                      return "";
+                  };
+                  throw new Error("Failed pattern match at Hand (line 249, column 20 - line 251, column 26): " + [ hand.level.constructor.name ]);
+              };
+              throw new Error("Failed pattern match at Hand (line 247, column 38 - line 251, column 26): " + [ hand.tricks.constructor.name ]);
+          })();
+      };
+      throw new Error("Failed pattern match at Hand (line 244, column 1 - line 244, column 35): " + [ hand.constructor.name ]);
   };
   var newHand = {
       allPass: false,
@@ -9662,7 +9685,7 @@ var PS = {};
           if (x instanceof Five && y instanceof Five) {
               return Data_Ordering.EQ.value;
           };
-          throw new Error("Failed pattern match at Hand (line 115, column 1 - line 115, column 50): " + [ x.constructor.name, y.constructor.name ]);
+          throw new Error("Failed pattern match at Hand (line 116, column 1 - line 116, column 50): " + [ x.constructor.name, y.constructor.name ]);
       };
   });
   var eqHonours = new Data_Eq.Eq(function (x) {
@@ -9699,7 +9722,7 @@ var PS = {};
               };
               return Data_Ord.compare(ordHonoursType)(x.value1)(y.value1);
           };
-          throw new Error("Failed pattern match at Hand (line 132, column 1 - line 132, column 42): " + [ x.constructor.name, y.constructor.name ]);
+          throw new Error("Failed pattern match at Hand (line 133, column 1 - line 133, column 42): " + [ x.constructor.name, y.constructor.name ]);
       };
   });
   var eqDoubled = new Data_Eq.Eq(function (x) {
@@ -9741,7 +9764,7 @@ var PS = {};
           if (x instanceof Redoubled && y instanceof Redoubled) {
               return Data_Ordering.EQ.value;
           };
-          throw new Error("Failed pattern match at Hand (line 147, column 1 - line 147, column 42): " + [ x.constructor.name, y.constructor.name ]);
+          throw new Error("Failed pattern match at Hand (line 148, column 1 - line 148, column 42): " + [ x.constructor.name, y.constructor.name ]);
       };
   });
   var defaultTricks = function (v) {
@@ -9773,7 +9796,7 @@ var PS = {};
   exports["setHonours"] = setHonours;
   exports["validHonours"] = validHonours;
   exports["setDoubled"] = setDoubled;
-  exports["renderHand"] = renderHand;
+  exports["renderHandResult"] = renderHandResult;
   exports["eqSuit"] = eqSuit;
   exports["eqLevel"] = eqLevel;
   exports["ordHonours"] = ordHonours;
@@ -10012,7 +10035,7 @@ var PS = {};
       };
   };
   var renderButtons = function (hand) {
-      return Halogen_HTML_Elements.div([ Halogen_HTML_Properties.id_("buttons") ])([ Halogen_HTML_Elements.div([ Halogen_HTML_Properties.class_("five_buttons") ])([ button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Data_Eq.eqChar))(hand.declarer)(new Data_Maybe.Just("N")))("N")(new SetDeclarer("N", Score.We.value)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Data_Eq.eqChar))(hand.declarer)(new Data_Maybe.Just("E")))("E")(new SetDeclarer("E", Score.They.value)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Data_Eq.eqChar))(hand.declarer)(new Data_Maybe.Just("S")))("S")(new SetDeclarer("S", Score.We.value)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Data_Eq.eqChar))(hand.declarer)(new Data_Maybe.Just("W")))("W")(new SetDeclarer("W", Score.They.value)), button(hand.allPass)("AP")(SetAllPass.value) ]), Halogen_HTML_Elements.div([ Halogen_HTML_Properties.class_("seven_buttons") ])([ button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Hand.eqLevel))(hand.level)(Hand.toLevel(1)))("1")(new SetLevel(1)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Hand.eqLevel))(hand.level)(Hand.toLevel(2)))("2")(new SetLevel(2)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Hand.eqLevel))(hand.level)(Hand.toLevel(3)))("3")(new SetLevel(3)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Hand.eqLevel))(hand.level)(Hand.toLevel(4)))("4")(new SetLevel(4)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Hand.eqLevel))(hand.level)(Hand.toLevel(5)))("5")(new SetLevel(5)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Hand.eqLevel))(hand.level)(Hand.toLevel(6)))("6")(new SetLevel(6)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Hand.eqLevel))(hand.level)(Hand.toLevel(7)))("7")(new SetLevel(7)) ]), Halogen_HTML_Elements.div([ Halogen_HTML_Properties.class_("five_buttons") ])([ button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Hand.eqSuit))(hand.suit)(new Data_Maybe.Just(Hand.Clubs.value)))("\u2663")(new SetSuit(Hand.Clubs.value)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Hand.eqSuit))(hand.suit)(new Data_Maybe.Just(Hand.Diamonds.value)))("\u2666")(new SetSuit(Hand.Diamonds.value)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Hand.eqSuit))(hand.suit)(new Data_Maybe.Just(Hand.Hearts.value)))("\u2665")(new SetSuit(Hand.Hearts.value)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Hand.eqSuit))(hand.suit)(new Data_Maybe.Just(Hand.Spades.value)))("\u2660")(new SetSuit(Hand.Spades.value)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Hand.eqSuit))(hand.suit)(new Data_Maybe.Just(Hand.NoTrumps.value)))("\ud83d\udeab")(new SetSuit(Hand.NoTrumps.value)) ]), Halogen_HTML_Elements.div([ Halogen_HTML_Properties.class_("render_buttons") ])([ button(false)("-")(DecreaseTricks.value), Halogen_HTML_Core.text(Hand.renderHand(hand)), button(false)("+")(IncreaseTricks.value) ]), Halogen_HTML_Elements.div([ Halogen_HTML_Properties.class_("two_buttons") ])([ select(Hand.ordDoubled)(function ($49) {
+      return Halogen_HTML_Elements.div([ Halogen_HTML_Properties.id_("buttons") ])([ Halogen_HTML_Elements.div([ Halogen_HTML_Properties.class_("five_buttons") ])([ button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Data_Eq.eqChar))(hand.declarer)(new Data_Maybe.Just("N")))("N")(new SetDeclarer("N", Score.We.value)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Data_Eq.eqChar))(hand.declarer)(new Data_Maybe.Just("E")))("E")(new SetDeclarer("E", Score.They.value)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Data_Eq.eqChar))(hand.declarer)(new Data_Maybe.Just("S")))("S")(new SetDeclarer("S", Score.We.value)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Data_Eq.eqChar))(hand.declarer)(new Data_Maybe.Just("W")))("W")(new SetDeclarer("W", Score.They.value)), button(hand.allPass)("AP")(SetAllPass.value) ]), Halogen_HTML_Elements.div([ Halogen_HTML_Properties.class_("seven_buttons") ])([ button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Hand.eqLevel))(hand.level)(Hand.toLevel(1)))("1")(new SetLevel(1)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Hand.eqLevel))(hand.level)(Hand.toLevel(2)))("2")(new SetLevel(2)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Hand.eqLevel))(hand.level)(Hand.toLevel(3)))("3")(new SetLevel(3)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Hand.eqLevel))(hand.level)(Hand.toLevel(4)))("4")(new SetLevel(4)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Hand.eqLevel))(hand.level)(Hand.toLevel(5)))("5")(new SetLevel(5)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Hand.eqLevel))(hand.level)(Hand.toLevel(6)))("6")(new SetLevel(6)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Hand.eqLevel))(hand.level)(Hand.toLevel(7)))("7")(new SetLevel(7)) ]), Halogen_HTML_Elements.div([ Halogen_HTML_Properties.class_("five_buttons") ])([ button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Hand.eqSuit))(hand.suit)(new Data_Maybe.Just(Hand.Clubs.value)))("\u2663")(new SetSuit(Hand.Clubs.value)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Hand.eqSuit))(hand.suit)(new Data_Maybe.Just(Hand.Diamonds.value)))("\u2666")(new SetSuit(Hand.Diamonds.value)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Hand.eqSuit))(hand.suit)(new Data_Maybe.Just(Hand.Hearts.value)))("\u2665")(new SetSuit(Hand.Hearts.value)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Hand.eqSuit))(hand.suit)(new Data_Maybe.Just(Hand.Spades.value)))("\u2660")(new SetSuit(Hand.Spades.value)), button(!hand.allPass && Data_Eq.eq(Data_Maybe.eqMaybe(Hand.eqSuit))(hand.suit)(new Data_Maybe.Just(Hand.NoTrumps.value)))("\ud83d\udeab")(new SetSuit(Hand.NoTrumps.value)) ]), Halogen_HTML_Elements.div([ Halogen_HTML_Properties.class_("render_buttons") ])([ button(false)("-")(DecreaseTricks.value), Halogen_HTML_Core.text(Hand.renderHandResult(hand)), button(false)("+")(IncreaseTricks.value) ]), Halogen_HTML_Elements.div([ Halogen_HTML_Properties.class_("two_buttons") ])([ select(Hand.ordDoubled)(function ($49) {
           return Data_Maybe.Just.create(SetDouble.create($49));
       })(function (v) {
           return false;
