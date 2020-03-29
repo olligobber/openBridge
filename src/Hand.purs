@@ -18,12 +18,14 @@ module Hand (
     setLevel,
     setTricks,
     setHonours,
+    validHonours,
     setDoubled,
     renderHand,
     scoreHand
 ) where
 
-import Prelude (class Eq, const, between, otherwise, show, pure, not, join,
+import Prelude
+    (class Eq, class Ord, const, between, otherwise, show, pure, not, join,
     ($), (&&), (+), (*), (-), (>=), (==), (/=), (<>), (<$>), (<@>), (<*>), (<=))
 import Data.Maybe (Maybe(..))
 import Data.Maybe (maybe) as Maybe
@@ -37,6 +39,8 @@ import Score (ScoreEntry, Team, opposition, getTeam, Vulnerability)
 
 -- 5 Possible Suit Bids
 data Suit = Clubs | Diamonds | Hearts | Spades | NoTrumps
+
+derive instance eqSuit :: Eq Suit
 
 -- Render a suit
 showSuit :: Suit -> String
@@ -69,6 +73,8 @@ suitValue _ = 30
 
 -- Bidding level
 newtype Level = Level Int
+
+derive instance eqLevel :: Eq Level
 
 toLevel :: Int -> Maybe Level
 toLevel x   | between 1 7 x     = Just $ Level x
@@ -105,6 +111,9 @@ renderResult (LostBy amount) = "-" <> show amount
 -- Honours held
 data HonoursType = Aces | Four | Five
 
+derive instance eqHonoursType :: Eq HonoursType
+derive instance ordHonoursType :: Ord HonoursType
+
 -- Check validity of honours selection
 validHonours :: HonoursType -> Suit -> Boolean
 validHonours Aces NoTrumps = true
@@ -119,6 +128,9 @@ honoursValue _ = 150
 
 data Honours = None | Hons Team HonoursType
 
+derive instance eqHonours :: Eq Honours
+derive instance ordHonours :: Ord Honours
+
 validHons :: Honours -> Suit -> Boolean
 validHons (Hons _ honours) = validHonours honours
 validHons _ = const true
@@ -131,7 +143,8 @@ doubleFactor Undoubled = 1
 doubleFactor Doubled = 2
 doubleFactor Redoubled = 4
 
-derive instance eqdoubled :: Eq Doubled
+derive instance eqDoubled :: Eq Doubled
+derive instance ordDoubled :: Ord Doubled
 
 -- All data for one hand, possibly incomplete
 type Hand = {

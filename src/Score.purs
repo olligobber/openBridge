@@ -11,7 +11,8 @@ module Score (
     scoreAll
 ) where
 
-import Prelude (class Eq, class Show, not, otherwise, (&&), (>=), (+), ($))
+import Prelude
+    (class Eq, class Ord, class Show, not, otherwise, (&&), (>=), (+), ($))
 import Data.Maybe (Maybe(..))
 import Data.List (List(..), (:))
 import Data.List (reverse) as List
@@ -20,6 +21,7 @@ import Data.Foldable (class Foldable, foldl)
 data Team = We | They
 
 derive instance eqTeam :: Eq Team
+derive instance ordTeam :: Ord Team
 instance showTeam :: Show Team where
     show We = "We"
     show They = "They"
