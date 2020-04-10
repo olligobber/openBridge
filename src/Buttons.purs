@@ -128,8 +128,7 @@ render (Active state) = HH.div
             , Tuple "Redobuled" Redoubled
             ]
         , select (map SetHonours) (hideHons state.hand) state.hand.honours
-            [ Tuple "Honours" Nothing
-            , Tuple "No honors" $ Just None
+            [ Tuple "No honors" $ Just None
             , Tuple "We have 4" $ Just $ Hons We Four
             , Tuple "We have 5" $ Just $ Hons We Five
             , Tuple "We have aces" $ Just $ Hons We Aces

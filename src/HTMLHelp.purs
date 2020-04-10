@@ -5,13 +5,14 @@ module HTMLHelp
     ) where
 
 import Prelude
-    (Unit, class Ord, ($), (<$>), (>=>), (>>=), flip, identity, (<<<), not)
+    (Unit, class Ord,
+    ($), (<$>), (>=>), (>>=), (<>),
+    flip, identity, otherwise)
 import Effect (Effect)
 import Data.Map as M
 import Data.Maybe (Maybe(..), maybe)
 import Data.Tuple (Tuple(..))
 import Data.Tuple as T
-import Data.Array as A
 import Web.HTML (window)
 import Web.HTML.Window as W
 import Halogen as H
@@ -38,17 +39,31 @@ select :: forall a b r m. Ord a => (a -> Maybe b) -> (a -> Boolean) -> a ->
     Array (Tuple String a) -> H.ComponentHTML b r m
 select act hide sel options = HH.select
     [ HE.onValueChange $ flip M.lookup forwardMap >=> act
-    , HP.value $ maybe "" identity $ M.lookup sel backwardMap
+    , HP.value $ maybe "-- Choose one --" identity $ M.lookup sel backwardMap
     ]
-    $ option <$> A.filter (not <<< hide <<< T.snd) options
+    $ extraoption <> (option <$> options)
     where
+        extraoption = case M.lookup sel backwardMap of
+            Nothing -> [ HH.option
+                    [ HP.value "-- Choose one --"
+                    , HP.disabled true
+                    , HP.attr (H.AttrName "hidden") "true"
+                    ]
+                    [ HH.text "-- Choose one --" ]
+                ]
+            Just _ -> []
         forwardMap = M.fromFoldable options
         backwardMap = M.fromFoldable $ T.swap <$> options
-        option (Tuple name acts) = HH.option
-            [ HP.value name
-            , HP.disabled $ hide acts
-            ]
-            [ HH.text name ]
+        option (Tuple name acts)
+            | hide acts = HH.option
+                [ HP.value name
+                , HP.disabled true
+                , HP.attr (H.AttrName "hidden") "true"
+                ]
+                [ HH.text name ]
+            | otherwise = HH.option
+                [ HP.value name ]
+                [ HH.text name ]
 
 -- Pop up alert
 alert :: String -> Effect Unit
