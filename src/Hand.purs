@@ -3,6 +3,7 @@ module Hand (
     showSuit,
     Level,
     toLevel,
+    allLevels,
     Tricks,
     toTricks,
     defaultTricks,
@@ -22,6 +23,7 @@ module Hand (
     setDoubled,
     renderHand,
     renderHandResult,
+    HandScore,
     scoreHand
 ) where
 
@@ -32,6 +34,7 @@ import Data.Maybe (Maybe(..))
 import Data.Maybe (maybe) as Maybe
 import Data.Either (Either(..))
 import Data.List (List(..))
+import Data.Tuple (Tuple(..))
 import Data.String.CodeUnits (singleton) as String
 import Data.String.Utils (padStart, padEnd) as String
 import Data.Validation.Semigroup (V(..))
@@ -80,6 +83,17 @@ derive instance eqLevel :: Eq Level
 toLevel :: Int -> Maybe Level
 toLevel x   | between 1 7 x     = Just $ Level x
             | otherwise         = Nothing
+
+allLevels :: Array (Tuple Int Level)
+allLevels =
+    [ Tuple 1 $ Level 1
+    , Tuple 2 $ Level 2
+    , Tuple 3 $ Level 3
+    , Tuple 4 $ Level 4
+    , Tuple 5 $ Level 5
+    , Tuple 6 $ Level 6
+    , Tuple 7 $ Level 7
+    ]
 
 -- Tricks won
 newtype Tricks = Tricks Int
@@ -252,9 +266,11 @@ renderHandResult hand
 
 type Errors = Array String
 
+type HandScore = Vulnerability -> List (ScoreEntry String)
+
 -- Assign scores to a hand given all details of the hand
 scoreHand' :: Char -> Team -> Suit -> Level -> Maybe Tricks -> Honours ->
-    Doubled -> Either Errors (Vulnerability -> List (ScoreEntry String))
+    Doubled -> Either Errors HandScore
 scoreHand' declarer team suit level tricks hons doubled
     | not $ validHons hons suit =
         Left ["Invalid choice of Honours for this Suit"]
@@ -388,7 +404,7 @@ withError Nothing e = V $ Left [e]
 withError (Just x) _ = V $ Right x
 
 -- Get a score generator for a hand, or errors if the hand cannot be scored
-scoreHand :: Hand -> Either Errors (Vulnerability -> List (ScoreEntry String))
+scoreHand :: Hand -> Either Errors HandScore
 scoreHand hand
     | hand.allPass = pure $ const Nil
     | otherwise = join $ V.toEither scores
