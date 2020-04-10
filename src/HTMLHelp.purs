@@ -41,9 +41,9 @@ select act hide sel options = HH.select
     [ HE.onValueChange $ flip M.lookup forwardMap >=> act
     , HP.value $ maybe "-- Choose one --" identity $ M.lookup sel backwardMap
     ]
-    $ extraoption <> (option <$> options)
+    $ default <> (option <$> options)
     where
-        extraoption = [ HH.option
+        default = [ HH.option
                 [ HP.value "-- Choose one --"
                 , HP.disabled true
                 , HP.attr (H.AttrName "hidden") ""

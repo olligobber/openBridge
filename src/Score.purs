@@ -8,6 +8,7 @@ module Score (
     Vulnerability,
     ScoreEntry,
     ScoreTotal,
+    startScore,
     scoreAll
 ) where
 
@@ -15,7 +16,6 @@ import Prelude
     (class Eq, class Ord, class Show, not, otherwise,
     (&&), (>=), (+), ($), (<>))
 import Data.Maybe (Maybe(..))
-import Data.Array as A
 import Data.Foldable (class Foldable, foldl)
 
 data Team = We | They
@@ -120,7 +120,7 @@ scoreEntry :: forall s. TotalState s -> ScoreEntry s -> TotalState s
 scoreEntry state entry = case rubberBonus state.rbsource state.totals entry of
     Just rubber -> -- Rubber won
         scoreEntry { -- add the rubber bonus to the state next
-            entries : [Nothing, Just entry] <> state.entries, -- Add this score and a line below
+            entries : state.entries <> [Just entry, Nothing], -- Add this score and a line below
             totals : {
                 vulnerable : startTeams false, -- New rubber, no one vulnerable
                 below : startTeams 0, -- New line, no scores below
@@ -129,7 +129,7 @@ scoreEntry state entry = case rubberBonus state.rbsource state.totals entry of
             rbsource : state.rbsource
         } rubber
     _ | doesGame state.totals entry -> { -- Game won
-        entries : [Nothing, Just entry] <> state.entries, -- Add this score and a line below
+        entries : state.entries <> [Just entry, Nothing], -- Add this score and a line below
         totals : {
             vulnerable : adjustTeam not entry.team state.totals.vulnerable, -- Flip vulnerability of winning team
             below : startTeams 0, -- New line, no scores below
@@ -138,7 +138,7 @@ scoreEntry state entry = case rubberBonus state.rbsource state.totals entry of
         rbsource : state.rbsource
     }
     _ | entry.below -> { -- Points below the line
-        entries : [Just entry] <> state.entries, -- Add this score
+        entries : state.entries <> [Just entry], -- Add this score
         totals : { -- Only update scores
             vulnerable : state.totals.vulnerable,
             below : adjustTeam (_ + entry.amount) entry.team state.totals.below,
@@ -147,7 +147,7 @@ scoreEntry state entry = case rubberBonus state.rbsource state.totals entry of
         rbsource : state.rbsource
     }
     _ -> { -- Points above the line
-        entries : [Just entry] <> state.entries, -- Add this score
+        entries : state.entries <> [Just entry], -- Add this score
         totals : state.totals { -- Only uodate total points
             total = adjustTeam (_ + entry.amount) entry.team state.totals.total
         },
@@ -165,7 +165,7 @@ scoreAll :: forall f s. Foldable f =>
     s -> f (Vulnerability -> f (ScoreEntry s)) ->
     {entries :: Array (Maybe (ScoreEntry s)), totals :: ScoreTotal}
 scoreAll rbsource list = {
-        entries : A.reverse foldres.entries,
+        entries : foldres.entries,
         totals : foldres.totals
     } where
         foldres = foldl scoreStep (startState rbsource) list
