@@ -33,7 +33,6 @@ import Prelude
 import Data.Maybe (Maybe(..))
 import Data.Maybe (maybe) as Maybe
 import Data.Either (Either(..))
-import Data.List (List(..))
 import Data.Tuple (Tuple(..))
 import Data.String.CodeUnits (singleton) as String
 import Data.String.Utils (padStart, padEnd) as String
@@ -266,7 +265,7 @@ renderHandResult hand
 
 type Errors = Array String
 
-type HandScore = Vulnerability -> List (ScoreEntry String)
+type HandScore = Vulnerability -> Array (ScoreEntry String)
 
 -- Assign scores to a hand given all details of the hand
 scoreHand' :: Char -> Team -> Suit -> Level -> Maybe Tricks -> Honours ->
@@ -295,7 +294,7 @@ scoreHand' declarer team suit level tricks hons doubled
             source : "Won " <> contract
         }
         overBonus x
-            | x == 0 = Nil -- No overtricks won, no points
+            | x == 0 = [] -- No overtricks won, no points
             | doubled == Undoubled = pure {
                     team,
                     below : false,
@@ -322,7 +321,7 @@ scoreHand' declarer team suit level tricks hons doubled
                 }
         -- Bonus of 50 points for winning a doubled contract, 100 for redoubled
         insult
-            | doubled == Undoubled = Nil
+            | doubled == Undoubled = []
             | otherwise = pure {
                     team,
                     below : false,
@@ -344,9 +343,9 @@ scoreHand' declarer team suit level tricks hons doubled
                     amount : 500 * (levelnum - 5),
                     source : contract <> " slam bonus"
                 }
-            | otherwise = Nil -- Didn't bid 6 or 7, no slam
+            | otherwise = [] -- Didn't bid 6 or 7, no slam
         honours = case hons of
-            None -> Nil
+            None -> []
             Hons honsteam Four -> pure {
                     team : honsteam,
                     below : false,
@@ -406,7 +405,7 @@ withError (Just x) _ = V $ Right x
 -- Get a score generator for a hand, or errors if the hand cannot be scored
 scoreHand :: Hand -> Either Errors HandScore
 scoreHand hand
-    | hand.allPass = pure $ const Nil
+    | hand.allPass = pure $ const []
     | otherwise = join $ V.toEither scores
     where
         scores = scoreHand'

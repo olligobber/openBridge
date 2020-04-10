@@ -13,8 +13,6 @@ import Prelude
     ((==), ($), (<$>), (-), (<$), (<<<), (<>), (>>=), (>),
     Unit, pure, otherwise, discard, const, unit)
 import Data.Array as A
-import Data.List (List(..), (:))
-import Data.List as L
 import Data.Maybe (Maybe(..))
 import Effect.Unsafe as Unsafe
 import HTMLHelp (button, alert)
@@ -37,7 +35,7 @@ data Action
 
 data Message
     = Edit Hand
-    | Score (List HandScore)
+    | Score (Array HandScore)
     | Deselecting
 
 data Selection
@@ -46,7 +44,7 @@ data Selection
     | None
 
 type State =
-    { hands :: List { hand :: Hand, score :: HandScore }
+    { hands :: Array { hand :: Hand, score :: HandScore }
     , selected :: Selection
     }
 
@@ -61,7 +59,7 @@ component = H.mkComponent {
 }
 
 initialState :: State
-initialState = { hands : Nil, selected : None }
+initialState = { hands : [], selected : None }
 
 handHTML :: forall m. Maybe Int -> Int -> Hand -> H.ComponentHTML Action () m
 handHTML sel index hand
@@ -86,25 +84,25 @@ render state = case state.selected of
         [ HP.id_ "hands" ]
         $ [ HH.div (HP.class_ <<< H.ClassName <$> ["hand", "selected"]) [] ]
             <> A.mapWithIndex (handHTML Nothing)
-                (_.hand <$> L.toUnfoldable state.hands)
+                (_.hand <$> state.hands)
     None -> HH.div
         [ HP.id_ "hands" ]
         $ A.mapWithIndex (handHTML Nothing)
-            (_.hand <$> L.toUnfoldable state.hands)
+            (_.hand <$> state.hands)
     Editing i -> HH.div
         [ HP.id_ "hands" ]
         $ A.mapWithIndex (handHTML $ Just i)
-            (_.hand <$> L.toUnfoldable state.hands)
+            (_.hand <$> state.hands)
 
 handleAction :: forall m. Action -> H.HalogenM State Action () Message m Unit
-handleAction (EditHand i) = H.get >>= \state -> case L.index state.hands i of
+handleAction (EditHand i) = H.get >>= \state -> case A.index state.hands i of
     Nothing -> pure $ Unsafe.unsafePerformEffect $
         alert "Invalid edit hand button press"
     Just handi -> do
         H.put $ state { selected = Editing i }
         H.raise $ Edit handi.hand
 handleAction (DeleteHand i) =
-    H.get >>= \state -> case L.deleteAt i state.hands of
+    H.get >>= \state -> case A.deleteAt i state.hands of
         Nothing -> pure $ Unsafe.unsafePerformEffect $
             alert "Invalid delete hand button press"
         Just newHands -> case state.selected of
@@ -127,10 +125,10 @@ handleQuery (Set newHand a) = H.get >>= \state -> case state.selected of
         let _ = Unsafe.unsafePerformEffect $ alert "Invalid query to set hand"
         pure $ Just a
     MakingNew -> do
-        H.modify_ $ _ { hands = newHand : state.hands}
-        H.raise $ Score $ _.score <$> (newHand : state.hands)
+        H.modify_ $ _ { hands = [newHand] <> state.hands}
+        H.raise $ Score $ _.score <$> ([newHand] <> state.hands)
         pure $ Just a
-    Editing i -> case L.updateAt i newHand state.hands of
+    Editing i -> case A.updateAt i newHand state.hands of
         Nothing -> do
             let _ = Unsafe.unsafePerformEffect $ alert "Invalid hand selection"
             pure $ Just a

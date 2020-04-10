@@ -5,7 +5,6 @@ import Prelude
     Unit, class Eq, discard, map, bind, pure, negate)
 import Data.Maybe (Maybe(..), isNothing, isJust, fromJust)
 import Data.Either (Either(..), isRight, fromRight)
-import Data.List (List(..), (:))
 import Effect (Effect)
 import Data.Foldable (any)
 import Test.Unit (suite, test)
@@ -300,12 +299,10 @@ main = runTest do
             let hand = unsafePartial $ fromJust $ maybeHand
             A.assert "Scored hand" $ isRight $ scoreHand hand
             let scoredHand = unsafePartial $ fromRight $ scoreHand hand
-                scorepad = scoreAll "Rubber Bonus" (scoredHand : Nil)
+                scorepad = scoreAll "Rubber Bonus" [scoredHand]
             A.equal
-                ( Just {team : We, below : true, amount : 70,
-                    source : "Won E2🚫"}
-                : Nil
-                )
+                [ Just {team : We, below : true, amount : 70,
+                    source : "Won E2🚫"} ]
                 scorepad.entries
             A.equal (startTeams false) scorepad.totals.vulnerable
             A.equal {we : 70, they : 0} scorepad.totals.below
@@ -325,14 +322,13 @@ main = runTest do
             let hand = unsafePartial $ fromJust $ maybeHand
             A.assert "Scored hand" $ isRight $ scoreHand hand
             let scoredHand = unsafePartial $ fromRight $ scoreHand hand
-                scorepad = scoreAll "Rubber Bonus" (scoredHand : Nil)
+                scorepad = scoreAll "Rubber Bonus" [scoredHand]
             A.equal
-                ( Just {team : They, below : true, amount : 30,
+                [ Just {team : They, below : true, amount : 30,
                     source : "Won W1♠"}
-                : Just {team : They, below : false, amount : 30,
+                , Just {team : They, below : false, amount : 30,
                     source : "W1♠ with 1 overtrick(s)"}
-                : Nil
-                )
+                ]
                 scorepad.entries
         test "Scores N5♦+2" do
             let maybeHand = do
@@ -349,15 +345,14 @@ main = runTest do
             let hand = unsafePartial $ fromJust $ maybeHand
             A.assert "Scored hand" $ isRight $ scoreHand hand
             let scoredHand = unsafePartial $ fromRight $ scoreHand hand
-                scorepad = scoreAll "Rubber Bonus" (scoredHand : Nil)
+                scorepad = scoreAll "Rubber Bonus" [scoredHand]
             A.equal
-                ( Just {team : We, below : true, amount : 100,
+                [ Just {team : We, below : true, amount : 100,
                     source : "Won N5♦"}
-                : Nothing
-                : Just {team : We, below : false, amount : 40,
+                , Nothing
+                , Just {team : We, below : false, amount : 40,
                     source : "N5♦ with 2 overtrick(s)"}
-                : Nil
-                )
+                ]
                 scorepad.entries
             A.equal {we : true, they : false} scorepad.totals.vulnerable
             A.equal {we : 0, they : 0} scorepad.totals.below
@@ -378,17 +373,16 @@ main = runTest do
             let hand = unsafePartial $ fromJust $ maybeHand
             A.assert "Scored hand" $ isRight $ scoreHand hand
             let scoredHand = unsafePartial $ fromRight $ scoreHand hand
-                scorepad = scoreAll "Rubber Bonus" (scoredHand : Nil)
+                scorepad = scoreAll "Rubber Bonus" [scoredHand]
             A.equal
-                ( Just {team : They, below : true, amount : 160,
+                [ Just {team : They, below : true, amount : 160,
                     source : "Won S1🚫XX"}
-                : Nothing
-                : Just {team : They, below : false, amount : 400,
+                , Nothing
+                , Just {team : They, below : false, amount : 400,
                     source : "S1🚫XX with 2 overtrick(s)"}
-                : Just {team : They, below : false, amount : 100,
+                , Just {team : They, below : false, amount : 100,
                     source : "S1🚫XX insult bonus"}
-                : Nil
-                )
+                ]
                 scorepad.entries
             A.equal {we : false, they : true} scorepad.totals.vulnerable
             A.equal {we : 0, they : 0} scorepad.totals.below
@@ -409,16 +403,15 @@ main = runTest do
             let hand = unsafePartial $ fromJust $ maybeHand
             A.assert "Scored hand" $ isRight $ scoreHand hand
             let scoredHand = unsafePartial $ fromRight $ scoreHand hand
-                scorepad = scoreAll "Rubber Bonus" (scoredHand : Nil)
+                scorepad = scoreAll "Rubber Bonus" [scoredHand]
             A.equal
-                ( Just {team : They, below : true, amount : 60,
+                [ Just {team : They, below : true, amount : 60,
                     source : "Won W1♥X"}
-                : Just {team : They, below : false, amount : 100,
+                , Just {team : They, below : false, amount : 100,
                     source : "W1♥X with 1 overtrick(s)"}
-                : Just {team : They, below : false, amount : 50,
+                , Just {team : They, below : false, amount : 50,
                     source : "W1♥X insult bonus"}
-                : Nil
-                )
+                ]
                 scorepad.entries
             A.equal {we : false, they : false} scorepad.totals.vulnerable
             A.equal {we : 0, they : 60} scorepad.totals.below
@@ -454,7 +447,7 @@ main = runTest do
                             # setDoubled Doubled
                             # setTricks tricks10
                             # setHonours None
-                    pure (hand1 : hand2 : hand3 : hand4 : Nil)
+                    pure [hand1, hand2, hand3, hand4]
             A.assert "Created hands" $ isJust $ maybeHands
             let hands = unsafePartial $ fromJust $ maybeHands
             A.assert "Scored hands" $ isRight $ traverse scoreHand hands
@@ -462,26 +455,25 @@ main = runTest do
                     unsafePartial $ fromRight $ traverse scoreHand hands
                 scorepad = scoreAll "Rubber Bonus" scoredHands
             A.equal
-                ( Just {team : We, below : true, amount : 120,
+                [ Just {team : We, below : true, amount : 120,
                     source : "Won N6♣"}
-                : Nothing
-                : Just {team : We, below : false, amount : 500,
+                , Nothing
+                , Just {team : We, below : false, amount : 500,
                     source : "N6♣ slam bonus"}
-                : Just {team : We, below : true, amount : 40,
+                , Just {team : We, below : true, amount : 40,
                     source : "Won S1🚫"}
-                : Just {team : They, below : false, amount : 200,
+                , Just {team : They, below : false, amount : 200,
                     source : "Lost N2♥ with 2 undertrick(s)"}
-                : Just {team : We, below : true, amount : 120,
+                , Just {team : We, below : true, amount : 120,
                     source : "Won S3♦X"}
-                : Nothing
-                : Just {team : We, below : false, amount : 700,
+                , Nothing
+                , Just {team : We, below : false, amount : 700,
                     source : "Rubber Bonus"}
-                : Just {team : We, below : false, amount : 200,
+                , Just {team : We, below : false, amount : 200,
                     source : "S3♦X with 1 overtrick(s) and vulnerable"}
-                : Just {team : We, below : false, amount : 50,
+                , Just {team : We, below : false, amount : 50,
                     source : "S3♦X insult bonus"}
-                : Nil
-                )
+                ]
                 scorepad.entries
             A.equal {we : false, they : false} scorepad.totals.vulnerable
             A.equal {we : 0, they : 0} scorepad.totals.below
@@ -519,7 +511,7 @@ main = runTest do
                             # setDoubled Redoubled
                             # setTricks tricks12
                             # setHonours None
-                    pure (hand1 : hand2 : hand3 : hand4 : Nil)
+                    pure [hand1, hand2, hand3, hand4]
             A.assert "Created hands" $ isJust $ maybeHands
             let hands = unsafePartial $ fromJust $ maybeHands
             A.assert "Scored hands" $ isRight $ traverse scoreHand hands
@@ -527,29 +519,28 @@ main = runTest do
                     unsafePartial $ fromRight $ traverse scoreHand hands
                 scorepad = scoreAll "Rubber Bonus" scoredHands
             A.equal
-                ( Just {team : We, below : true, amount : 120,
+                [ Just {team : We, below : true, amount : 120,
                     source : "Won E4♠"}
-                : Nothing
-                : Just {team : We, below : false, amount : 30,
+                , Nothing
+                , Just {team : We, below : false, amount : 30,
                     source : "E4♠ with 1 overtrick(s)"}
-                : Just {team : They, below : true, amount : 210,
+                , Just {team : They, below : true, amount : 210,
                     source : "Won S7♠"}
-                : Nothing
-                : Just {team : They, below : false, amount : 1000,
+                , Nothing
+                , Just {team : They, below : false, amount : 1000,
                     source : "S7♠ slam bonus"}
-                : Just {team : We, below : false, amount : 1100,
+                , Just {team : We, below : false, amount : 1100,
                     source : "Lost N1🚫X with 4 undertrick(s)"}
-                : Just {team : They, below : true, amount : 480,
+                , Just {team : They, below : true, amount : 480,
                     source : "Won N4♥XX"}
-                : Nothing
-                : Just {team : They, below : false, amount : 500,
+                , Nothing
+                , Just {team : They, below : false, amount : 500,
                     source : "Rubber Bonus"}
-                : Just {team : They, below : false, amount : 800,
+                , Just {team : They, below : false, amount : 800,
                     source : "N4♥XX with 2 overtrick(s) and vulnerable"}
-                : Just {team : They, below : false, amount : 100,
+                , Just {team : They, below : false, amount : 100,
                     source : "N4♥XX insult bonus"}
-                : Nil
-                )
+                ]
                 scorepad.entries
             A.equal {we : false, they : false} scorepad.totals.vulnerable
             A.equal {we : 0, they : 0} scorepad.totals.below
@@ -586,7 +577,7 @@ main = runTest do
                             # setSuit NoTrumps
                             # setDoubled Doubled
                             # setHonours (Hons We Aces)
-                    pure (hand1 : hand2 : hand3 : hand4 : Nil)
+                    pure [hand1, hand2, hand3, hand4]
             A.assert "Created hands" $ isJust $ maybeHands
             let hands = unsafePartial $ fromJust $ maybeHands
             A.assert "Scored hands" $ isRight $ traverse scoreHand hands
@@ -594,32 +585,31 @@ main = runTest do
                     unsafePartial $ fromRight $ traverse scoreHand hands
                 scorepad = scoreAll "Rubber Bonus" scoredHands
             A.equal
-                ( Just {team : We, below : false, amount : 2200,
+                [ Just {team : We, below : false, amount : 2200,
                     source : "Lost W4♠XX with 5 undertrick(s)"}
-                : Just {team : We, below : false, amount : 100,
+                , Just {team : We, below : false, amount : 100,
                     source : "W4♠XX honours (4 out of 5)"}
-                : Just {team : We, below : true, amount : 100,
+                , Just {team : We, below : true, amount : 100,
                     source : "Won N3🚫"}
-                : Nothing
-                : Just {team : We, below : false, amount : 150,
+                , Nothing
+                , Just {team : We, below : false, amount : 150,
                     source : "N3🚫 honours (aces)"}
-                : Just {team : We, below : false, amount : 1400,
+                , Just {team : We, below : false, amount : 1400,
                     source : "Lost E5♣X with 6 undertrick(s)"}
-                : Just {team : We, below : false, amount : 150,
+                , Just {team : We, below : false, amount : 150,
                     source : "E5♣X honours (5 out of 5)"}
-                : Just {team : We, below : true, amount : 440,
+                , Just {team : We, below : true, amount : 440,
                     source : "Won N7🚫X"}
-                : Nothing
-                : Just {team : We, below : false, amount : 700,
+                , Nothing
+                , Just {team : We, below : false, amount : 700,
                     source : "Rubber Bonus"}
-                : Just {team : We, below : false, amount : 50,
+                , Just {team : We, below : false, amount : 50,
                     source : "N7🚫X insult bonus"}
-                : Just {team : We, below : false, amount : 1500,
+                , Just {team : We, below : false, amount : 1500,
                     source : "N7🚫X slam bonus and vulnerable"}
-                : Just {team : We, below : false, amount : 150,
+                , Just {team : We, below : false, amount : 150,
                     source : "N7🚫X honours (aces)"}
-                : Nil
-                )
+                ]
                 scorepad.entries
             A.equal {we : false, they : false} scorepad.totals.vulnerable
             A.equal {we : 0, they : 0} scorepad.totals.below
@@ -655,7 +645,7 @@ main = runTest do
                             # setSuit Clubs
                             # setTricks tricks13
                             # setHonours (Hons We Five)
-                    pure (hand1 : hand2 : hand3 : hand4 : Nil)
+                    pure [hand1, hand2, hand3, hand4]
             A.assert "Created hands" $ isJust $ maybeHands
             let hands = unsafePartial $ fromJust $ maybeHands
             A.assert "Scored hands" $ isRight $ traverse scoreHand hands
@@ -663,30 +653,29 @@ main = runTest do
                     unsafePartial $ fromRight $ traverse scoreHand hands
                 scorepad = scoreAll "Rubber Bonus" scoredHands
             A.equal
-                ( Just {team : They, below : false, amount : 50,
+                [ Just {team : They, below : false, amount : 50,
                     source : "Lost S2♠ with 1 undertrick(s)"}
-                : Just {team : We, below : true, amount : 120,
+                , Just {team : We, below : true, amount : 120,
                     source : "Won S4♥"}
-                : Nothing
-                : Just {team : We, below : false, amount : 100,
+                , Nothing
+                , Just {team : We, below : false, amount : 100,
                     source : "S4♥ honours (4 out of 5)"}
-                : Just {team : They, below : false, amount : 300,
+                , Just {team : They, below : false, amount : 300,
                     source : "Lost N2🚫 with 3 undertrick(s)"}
-                : Just {team : They, below : false, amount : 150,
+                , Just {team : They, below : false, amount : 150,
                     source : "N2🚫 honours (aces)"}
-                : Just {team : We, below : true, amount : 120,
+                , Just {team : We, below : true, amount : 120,
                     source : "Won S6♣"}
-                : Nothing
-                : Just {team : We, below : false, amount : 700,
+                , Nothing
+                , Just {team : We, below : false, amount : 700,
                     source : "Rubber Bonus"}
-                : Just {team : We, below : false, amount : 20,
+                , Just {team : We, below : false, amount : 20,
                     source : "S6♣ with 1 overtrick(s)"}
-                : Just {team : We, below : false, amount : 750,
+                , Just {team : We, below : false, amount : 750,
                     source : "S6♣ slam bonus and vulnerable"}
-                : Just {team : We, below : false, amount : 150,
+                , Just {team : We, below : false, amount : 150,
                     source : "S6♣ honours (5 out of 5)"}
-                : Nil
-                )
+                ]
                 scorepad.entries
             A.equal {we : false, they : false} scorepad.totals.vulnerable
             A.equal {we : 0, they : 0} scorepad.totals.below

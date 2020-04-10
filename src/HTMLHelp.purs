@@ -43,22 +43,20 @@ select act hide sel options = HH.select
     ]
     $ extraoption <> (option <$> options)
     where
-        extraoption = case M.lookup sel backwardMap of
-            Nothing -> [ HH.option
-                    [ HP.value "-- Choose one --"
-                    , HP.disabled true
-                    , HP.attr (H.AttrName "hidden") "true"
-                    ]
-                    [ HH.text "-- Choose one --" ]
+        extraoption = [ HH.option
+                [ HP.value "-- Choose one --"
+                , HP.disabled true
+                , HP.attr (H.AttrName "hidden") ""
                 ]
-            Just _ -> []
+                [ HH.text "-- Choose one --" ]
+            ]
         forwardMap = M.fromFoldable options
         backwardMap = M.fromFoldable $ T.swap <$> options
         option (Tuple name acts)
             | hide acts = HH.option
                 [ HP.value name
                 , HP.disabled true
-                , HP.attr (H.AttrName "hidden") "true"
+                , HP.attr (H.AttrName "hidden") ""
                 ]
                 [ HH.text name ]
             | otherwise = HH.option
