@@ -1,0 +1,173 @@
+$black: rgb(39,44,53)
+$grey: rgb(78,88,106)
+$white: rgb(236,236,236)
+$blue: rgb(0,138,205)
+$red: rgb(204,81,106)
+
+$panelwidth: 46%
+
+@import url('https://fonts.googleapis.com/css?family=Source+Code+Pro')
+
+// Global parts
+
+@media (orientation: portrait)
+    body
+        width: 200.0vw
+
+body
+    font-family: 'Source Code Pro', monospace
+    font-size: 3.0vh
+    height: 90.0vh
+    color: $black
+    background: $white
+    overflow-y: hidden
+
+.button
+    background-color: $black
+    transition: opacity 1s
+    color: $white
+    font-size: 3.0vh
+    text-align: center
+    margin: 0.5%
+    display: inline-block
+    user-select: none
+
+.button:hover
+    opacity: 0.7
+
+#main
+    height: 100%
+
+// Score pad
+
+#scorepad
+    float: left
+    width: $panelwidth
+    height: 100%
+    text-align: center
+    border-collapse: collapse
+    margin: 2%
+
+#teams
+    font-size: 4.0vh
+
+    th
+        border-bottom: solid $black
+        border-width: 1px
+
+#above
+    height: 45%
+    vertical-align: bottom
+
+    td
+        border-top: solid $black
+        border-bottom: solid $black
+        border-width: 1px
+
+.below td
+    border-top: solid $black
+    border-width: 1px
+
+.game
+    border-bottom: solid $black
+    border-width: 1px
+    height: 0
+
+.we
+    width: 50%
+    border-right: solid $black
+    border-width: 1px
+
+.they
+    width: 50%
+
+.pad
+    height: 100%
+
+#totals
+    border-top: solid $black
+    border-width: 1px
+
+// Right panel
+
+#rightpanel
+    float: right
+    width: $panelwidth
+    height: 100%
+    margin: 2%
+
+.selected
+    background-color: $blue
+    color: $white
+
+#menu
+    width: 100%
+    margin-bottom: 1%
+
+    .button
+        width: 100%
+        font-size: 4.0vh
+
+select
+    font-size: 3.0vh
+    font-family: inherit
+
+#hands
+    border-width: 1px
+    border: solid $black
+    border-radius: 0.5vh
+    overflow-y: scroll
+
+#hands.small
+    height: 30%
+
+#hands.big
+    height: 90%
+
+.hand
+    border-bottom: solid $grey
+    border-width: 1px
+    height: 4.5vh
+    padding: 1%
+    .button
+        float: right
+        border-radius: 0.5vh
+        margin-left: 1%
+
+#buttons
+    float: bottom
+
+.two-buttons
+    .button, select
+        margin: 1%
+        width: 48%
+        border-radius: 0.5vh
+
+.five-buttons .button
+    margin: 1%
+    width: 18%
+    border-radius: 0.5vh
+
+.seven-buttons .button
+    margin: 1%
+    width: 1px / 7px * 86%
+    border-radius: 0.5vh
+
+.render-buttons
+    width: 100%
+    .button
+        width: 10%
+        margin: 1%
+        border-radius: 0.5vh
+
+#hand-result
+    width: 76%
+    text-align: center
+    display: inline-block
+
+#button-error
+    padding: 1%
+    text-align: center
+    background: $red
+    color: $white
+    border-radius: 0.5vh

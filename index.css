@@ -1,0 +1,155 @@
+@import url("https://fonts.googleapis.com/css?family=Source+Code+Pro");
+@media (orientation: portrait) {
+  body {
+    width: 200vw; } }
+body {
+  font-family: "Source Code Pro", monospace;
+  font-size: 3vh;
+  height: 90vh;
+  color: #272c35;
+  background: #ececec;
+  overflow-y: hidden; }
+
+.button {
+  background-color: #272c35;
+  transition: opacity 1s;
+  color: #ececec;
+  font-size: 3vh;
+  text-align: center;
+  margin: 0.5%;
+  display: inline-block;
+  user-select: none; }
+
+.button:hover {
+  opacity: 0.7; }
+
+#main {
+  height: 100%; }
+
+#scorepad {
+  float: left;
+  width: 46%;
+  height: 100%;
+  text-align: center;
+  border-collapse: collapse;
+  margin: 2%; }
+
+#teams {
+  font-size: 4vh; }
+  #teams th {
+    border-bottom: solid #272c35;
+    border-width: 1px; }
+
+#above {
+  height: 45%;
+  vertical-align: bottom; }
+  #above td {
+    border-top: solid #272c35;
+    border-bottom: solid #272c35;
+    border-width: 1px; }
+
+.below td {
+  border-top: solid #272c35;
+  border-width: 1px; }
+
+.game {
+  border-bottom: solid #272c35;
+  border-width: 1px;
+  height: 0; }
+
+.we {
+  width: 50%;
+  border-right: solid #272c35;
+  border-width: 1px; }
+
+.they {
+  width: 50%; }
+
+.pad {
+  height: 100%; }
+
+#totals {
+  border-top: solid #272c35;
+  border-width: 1px; }
+
+#rightpanel {
+  float: right;
+  width: 46%;
+  height: 100%;
+  margin: 2%; }
+
+.selected {
+  background-color: #008acd;
+  color: #ececec; }
+
+#menu {
+  width: 100%;
+  margin-bottom: 1%; }
+  #menu .button {
+    width: 100%;
+    font-size: 4vh; }
+
+select {
+  font-size: 3vh;
+  font-family: inherit; }
+
+#hands {
+  border-width: 1px;
+  border: solid #272c35;
+  border-radius: 0.5vh;
+  overflow-y: scroll; }
+
+#hands.small {
+  height: 30%; }
+
+#hands.big {
+  height: 90%; }
+
+.hand {
+  border-bottom: solid #4e586a;
+  border-width: 1px;
+  height: 4.5vh;
+  padding: 1%; }
+  .hand .button {
+    float: right;
+    border-radius: 0.5vh;
+    margin-left: 1%; }
+
+#buttons {
+  float: bottom; }
+
+.two-buttons .button, .two-buttons select {
+  margin: 1%;
+  width: 48%;
+  border-radius: 0.5vh; }
+
+.five-buttons .button {
+  margin: 1%;
+  width: 18%;
+  border-radius: 0.5vh; }
+
+.seven-buttons .button {
+  margin: 1%;
+  width: 12.2857142857%;
+  border-radius: 0.5vh; }
+
+.render-buttons {
+  width: 100%; }
+  .render-buttons .button {
+    width: 10%;
+    margin: 1%;
+    border-radius: 0.5vh; }
+
+#hand-result {
+  width: 76%;
+  text-align: center;
+  display: inline-block; }
+
+#button-error {
+  padding: 1%;
+  text-align: center;
+  background: #cc516a;
+  color: #ececec;
+  border-radius: 0.5vh; }
+
+/*# sourceMappingURL=index.css.map */
