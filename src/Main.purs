@@ -6,6 +6,7 @@ import Data.Symbol (SProxy(..))
 import Data.Maybe (Maybe(..))
 import Halogen as H
 import Halogen.Aff as HA
+import Halogen.HTML.Properties as HP
 import Halogen.HTML as HH
 import Halogen.VDom.Driver (runUI)
 import HTMLHelp (button)
@@ -47,14 +48,20 @@ initialState :: State
 initialState = unit
 
 render :: forall m. State -> H.ComponentHTML Action Slots m
-render _ = HH.div_
+render _ = HH.div
+    [ HP.id_ "main" ]
     [ HH.slot _scorePad unit ScorePad.component ScorePad.NoAction
         (const $ Just None)
-    , button false "Add Hand" NewHand
-    , HH.slot _handList unit HandList.component HandList.NoAction
-        (Just <<< HandListMsg)
-    , HH.slot _buttons unit Buttons.component Buttons.NoAction
-        (Just <<< ButtonsMsg)
+    , HH.div
+        [ HP.id_ "rightpanel" ]
+        [ HH.div
+            [ HP.id_ "menu" ]
+            [ button false "Add Hand" NewHand ]
+        , HH.slot _handList unit HandList.component HandList.NoAction
+            (Just <<< HandListMsg)
+        , HH.slot _buttons unit Buttons.component Buttons.NoAction
+            (Just <<< ButtonsMsg)
+        ]
     ]
 
 handleAction :: forall m. Action -> H.HalogenM State Action Slots Unit m Unit

@@ -22,13 +22,15 @@ import Halogen.HTML.Properties as HP
 
 -- Make a button given its state, name, and action when pressed
 button :: forall r a m. Boolean -> String -> a -> H.ComponentHTML a r m
-button true name act = HH.button
+button true name act = HH.div
     [ HE.onClick $ \_ -> Just act
-    , HP.class_ $ HH.ClassName "selected"
+    , HP.class_ $ HH.ClassName "selected button"
     ]
     [ HH.text name ]
-button false name act = HH.button
-    [ HE.onClick $ \_ -> Just act ]
+button false name act = HH.div
+    [ HE.onClick $ \_ -> Just act
+    , HP.class_ $ HH.ClassName "button"
+    ]
     [ HH.text name ]
 
 {-

@@ -46,13 +46,12 @@ component = H.mkComponent {
 initialState :: State
 initialState = { entries : [], totals : startScore }
 
-splitOnNothings :: forall a. Array (Maybe a) -> Array (Array a)
+splitOnNothings :: forall a. Array (Maybe a) -> Array (Maybe (Array a))
 splitOnNothings =
     A.groupBy sameMaybe >>>
     map (
         toArray >>>
-        sequence) >>>
-    A.mapMaybe identity where
+        sequence) where
         sameMaybe Nothing Nothing = true
         sameMaybe (Just _) (Just _) = true
         sameMaybe _ _ = false
@@ -60,34 +59,54 @@ splitOnNothings =
 renderEntry :: forall m. ScoreEntry String -> H.ComponentHTML Action () m
 renderEntry entry = HH.div [] [ HH.text $ show $ entry.amount ]
 
-renderBelow :: forall m. Array (ScoreEntry String) ->
+renderBelow :: forall m. Maybe (Array (ScoreEntry String)) ->
     H.ComponentHTML Action () m
-renderBelow entries = HH.div
-    [ HP.class_ $ H.ClassName "Below" ]
-    [ HH.div [] $ renderEntry <$>
+renderBelow Nothing = HH.tr
+    [ HP.class_ $ H.ClassName "game" ]
+    [ HH.td [ HP.class_ $ H.ClassName "we" ] []
+    , HH.td [ HP.class_ $ H.ClassName "they" ] []
+    ]
+renderBelow (Just entries) = HH.tr
+    [ HP.class_ $ H.ClassName "below" ]
+    [ HH.td [ HP.class_ $ H.ClassName "we" ] $ renderEntry <$>
         A.filter (_.below && (\e -> e.team == We)) entries
-    , HH.div [] $ renderEntry <$>
+    , HH.td [ HP.class_ $ H.ClassName "they" ] $ renderEntry <$>
         A.filter (_.below && (\e -> e.team == They)) entries
     ]
 
 render :: forall m. State -> H.ComponentHTML Action () m
-render state = HH.div
-    [ HP.id_ "ScorePad" ]
-    $ [ HH.div
-        [ HP.id_ "Teams" ]
-        [ HH.div [] [ HH.text "We" ]
-        , HH.div [] [ HH.text "They" ]
+render state = HH.table
+    [ HP.id_ "scorepad" ]
+    $ [ HH.tr
+        [ HP.id_ "teams" ]
+        [ HH.th [ HP.class_ $ H.ClassName "we" ] [ HH.text "We" ]
+        , HH.th [ HP.class_ $ H.ClassName "they" ] [ HH.text "They" ]
         ]
-    , HH.div
-        [ HP.id_ "Above" ]
-        [ HH.div [] $ renderEntry <$>
+    , HH.tr
+        [ HP.id_ "above" ]
+        [ HH.td [ HP.class_ $ H.ClassName "we" ] $ renderEntry <$>
             A.filter (not _.below && (\e -> e.team == We))
                 (A.mapMaybe identity state.entries)
-        , HH.div [] $ renderEntry <$>
+        , HH.td [ HP.class_ $ H.ClassName "they" ] $ renderEntry <$>
             A.filter (not _.below && (\e -> e.team == They))
                 (A.mapMaybe identity state.entries)
         ]
     ] <> (renderBelow <$> splitOnNothings state.entries)
+    <> [ HH.tr
+        [ HP.class_ $ H.ClassName "pad" ]
+        [ HH.td [ HP.class_ $ H.ClassName "we" ] []
+        , HH.td [ HP.class_ $ H.ClassName "they" ] []
+        ]
+    , HH.tr
+        [ HP.id_ "totals" ]
+        [ HH.td
+            [ HP.class_ $ H.ClassName "we" ]
+            [ HH.text $ show $ state.totals.total.we ]
+        , HH.td
+            [ HP.class_ $ H.ClassName "they" ]
+            [ HH.text $ show $ state.totals.total.they ]
+        ]
+    ]
 
 handleAction :: forall m. Action -> H.HalogenM State Action () Message m Unit
 handleAction NoAction = pure unit

@@ -10,7 +10,7 @@ module HandList
     ) where
 
 import Prelude
-    ((==), ($), (<$>), (-), (<$), (<<<), (<>), (>>=), (>),
+    ((==), ($), (<$>), (-), (<$), (<>), (>>=), (>),
     Unit, pure, otherwise, discard, const, unit)
 import Data.Array as A
 import Data.Maybe (Maybe(..))
@@ -64,9 +64,7 @@ initialState = { hands : [], selected : None }
 handHTML :: forall m. Maybe Int -> Int -> Hand -> H.ComponentHTML Action () m
 handHTML sel index hand
     | sel == Just index = HH.div
-        [ HP.class_ $ H.ClassName "hand"
-        , HP.class_ $ H.ClassName "selected"
-        ]
+        [ HP.class_ $ H.ClassName "hand selected" ]
         [ HH.text $ renderHand hand
         , button false "Edit" (EditHand index)
         , button false "Delete" (DeleteHand index)
@@ -81,16 +79,22 @@ handHTML sel index hand
 render :: forall m. State -> H.ComponentHTML Action () m
 render state = case state.selected of
     MakingNew -> HH.div
-        [ HP.id_ "hands" ]
-        $ [ HH.div (HP.class_ <<< H.ClassName <$> ["hand", "selected"]) [] ]
+        [ HP.id_ "hands"
+        , HP.class_ $ H.ClassName "small"
+        ]
+        $ [ HH.div [ HP.class_ $ H.ClassName "hand selected" ] [] ]
             <> A.mapWithIndex (handHTML Nothing)
                 (_.hand <$> state.hands)
     None -> HH.div
-        [ HP.id_ "hands" ]
+        [ HP.id_ "hands"
+        , HP.class_ $ H.ClassName "big"
+        ]
         $ A.mapWithIndex (handHTML Nothing)
             (_.hand <$> state.hands)
     Editing i -> HH.div
-        [ HP.id_ "hands" ]
+        [ HP.id_ "hands"
+        , HP.class_ $ H.ClassName "small"
+        ]
         $ A.mapWithIndex (handHTML $ Just i)
             (_.hand <$> state.hands)
 

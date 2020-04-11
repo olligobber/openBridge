@@ -16,7 +16,7 @@ import Prelude
     (class Eq, class Ord, class Show, not, otherwise,
     (&&), (>=), (+), ($), (<>))
 import Data.Maybe (Maybe(..))
-import Data.Foldable (class Foldable, foldl)
+import Data.Foldable (class Foldable, foldl, foldr)
 
 data Team = We | They
 
@@ -148,7 +148,7 @@ scoreEntry state entry = case rubberBonus state.rbsource state.totals entry of
     }
     _ -> { -- Points above the line
         entries : state.entries <> [Just entry], -- Add this score
-        totals : state.totals { -- Only uodate total points
+        totals : state.totals { -- Only update total points
             total = adjustTeam (_ + entry.amount) entry.team state.totals.total
         },
         rbsource : state.rbsource
@@ -156,8 +156,8 @@ scoreEntry state entry = case rubberBonus state.rbsource state.totals entry of
 
 -- Add scores from a single generating function to the state
 scoreStep :: forall f s. Foldable f =>
-    TotalState s -> (Vulnerability -> f (ScoreEntry s)) -> TotalState s
-scoreStep state gen =
+    (Vulnerability -> f (ScoreEntry s)) -> TotalState s -> TotalState s
+scoreStep gen state =
     foldl scoreEntry state $ gen state.totals.vulnerable
 
 -- Add scores from a list of generating functions to the scorepad
@@ -168,4 +168,4 @@ scoreAll rbsource list = {
         entries : foldres.entries,
         totals : foldres.totals
     } where
-        foldres = foldl scoreStep (startState rbsource) list
+        foldres = foldr scoreStep (startState rbsource) list

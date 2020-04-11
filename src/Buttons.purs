@@ -9,7 +9,7 @@ module Buttons
     ) where
 
 import Prelude
-    ((==), ($), (<$>), (+), (-), (&&), (<<<), (<$), (>>=),
+    ((==), ($), (<$>), (+), (-), (&&), (<<<), (<$), (>>=), (<>),
     Unit,
     not, otherwise, map, discard, const, unit, pure, show)
 import Data.Maybe (Maybe(..), maybe)
@@ -83,8 +83,8 @@ hideHons hand (Just (Hons _ hons))
 render :: forall m. State -> H.ComponentHTML Action () m
 render (Active state) = HH.div
     [ HP.id_ "buttons" ]
-    [ HH.div
-        [ HP.class_ $ HH.ClassName "five_buttons" ]
+    $ [ HH.div
+        [ HP.class_ $ HH.ClassName "five-buttons" ]
         [ button (not state.hand.allPass && state.hand.declarer == Just 'N')
             "N" $ SetDeclarer 'N' We
         , button (not state.hand.allPass && state.hand.declarer == Just 'E')
@@ -96,13 +96,13 @@ render (Active state) = HH.div
         , button (state.hand.allPass) "AP" SetAllPass
         ]
     , HH.div
-        [ HP.class_ $ HH.ClassName "seven_buttons" ]
+        [ HP.class_ $ HH.ClassName "seven-buttons" ]
         $ (\(Tuple num level) ->
             button (not state.hand.allPass && state.hand.level == Just level)
                 (show num) (SetLevel level)
             ) <$> allLevels
     , HH.div
-        [ HP.class_ $ HH.ClassName "five_buttons" ]
+        [ HP.class_ $ HH.ClassName "five-buttons" ]
         [ button (not state.hand.allPass && state.hand.suit == Just Clubs)
             "♣" $ SetSuit Clubs
         , button (not state.hand.allPass && state.hand.suit == Just Diamonds)
@@ -115,13 +115,15 @@ render (Active state) = HH.div
             "🚫" $ SetSuit NoTrumps
         ]
     , HH.div
-        [ HP.class_ $ HH.ClassName "render_buttons" ]
+        [ HP.class_ $ HH.ClassName "render-buttons" ]
         [ button false "-" DecreaseTricks
-        , HH.text $ renderHandResult state.hand
+        , HH.div
+            [ HP.id_ "hand-result" ]
+            [HH.text $ renderHandResult state.hand ]
         , button false "+" IncreaseTricks
         ]
     , HH.div
-        [ HP.class_ $ HH.ClassName "two_buttons" ]
+        [ HP.class_ $ HH.ClassName "two-buttons" ]
         [ select (Just <<< SetDouble) (\_ -> false) state.hand.doubled
             [ Tuple "Undoubled" Undoubled
             , Tuple "Doubled" Doubled
@@ -138,14 +140,16 @@ render (Active state) = HH.div
             ]
         ]
     , HH.div
-        [ HP.class_ $ HH.ClassName "two_button" ]
+        [ HP.class_ $ HH.ClassName "two-buttons" ]
         [ button false "Submit" Submit
         , button false "Revert" Revert
         ]
-    , HH.div
-        [ HP.class_ $ HH.ClassName "button_error" ]
-        $ HH.text <$> state.error
-    ]
+    ] <> case state.error of
+        [] -> []
+        _ -> [ HH.div
+            [ HP.id_ "button-error" ]
+            $ HH.div_ <<< pure <<< HH.text <$> state.error
+            ]
 render InActive = HH.div [] []
 
 modifyActive :: ({ hand :: Hand, error :: Array String } ->

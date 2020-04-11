@@ -51,7 +51,7 @@ showSuit Clubs = "♣"
 showSuit Diamonds = "♦"
 showSuit Hearts = "♥"
 showSuit Spades = "♠"
-showSuit NoTrumps = "🚫"
+showSuit NoTrumps = "\\"
 
 -- Classification of suits by point value
 data SuitType = Minor | Major | NT
