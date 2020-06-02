@@ -12900,7 +12900,9 @@ var PS = {};
                               return Data_Maybe.Just.create(ButtonsMsg.create($19));
                           }) ]), Halogen_HTML_Elements.div([ Halogen_HTML_Properties.id_("errors"), Halogen_HTML_Events.onClick(function (v1) {
                               return new Data_Maybe.Just(ClearError.value);
-                          }) ])(Data_Functor.map(Data_Functor.functorArray)(Halogen_HTML_Core.text)(v.value0)) ]);
+                          }) ])(Data_Functor.map(Data_Functor.functorArray)(function (err) {
+                              return Halogen_HTML_Elements.div([  ])([ Halogen_HTML_Core.text(err) ]);
+                          })(v.value0)) ]);
                       };
                       throw new Error("Failed pattern match at Main (line 63, column 1 - line 68, column 44): " + [ v.constructor.name ]);
                   };

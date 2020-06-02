@@ -100,7 +100,7 @@ select {
   overflow-y: scroll; }
 
 #hands.small {
-  height: 30%; }
+  height: 50%; }
 
 #hands.big {
   height: 90%; }
@@ -145,15 +145,15 @@ select {
   text-align: center;
   display: inline-block; }
 
-#error {
+#errors {
   display: block;
   position: fixed;
-  line-height: 3em;
   bottom: 0;
+  left: 0;
   width: 100%;
   padding: 1%;
   text-align: center;
-  background: #cc516a;
+  background-color: #cc516a;
   color: #ececec; }
 
 /*# sourceMappingURL=index.css.map */

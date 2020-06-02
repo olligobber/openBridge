@@ -99,7 +99,7 @@ render (Just e) = HH.div
         [ HP.id_ "errors"
         , HE.onClick $ \_ -> Just ClearError
         ]
-        $ HH.text <$> e
+        $ (\err -> HH.div [] [ HH.text err ]) <$> e
     ]
 
 handleAction :: forall m.
