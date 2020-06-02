@@ -15,7 +15,7 @@ import Data.Array as A
 import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..))
 import Data.Either (Either(..))
-import Control.Monad.Reader.Trans (ReaderT, runReaderT, asks, lift)
+import Control.Monad.Reader.Trans (ReaderT, runReaderT, ask, lift)
 
 import Hand as H
 import Capabilities
@@ -46,11 +46,13 @@ derive newtype instance bindAppStateM :: Bind AppStateM
 derive newtype instance monadAppStateM :: Monad AppStateM
 
 get :: AppStateM AppState
-get = AppStateM $ asks >>= lift read
+get = AppStateM $ do
+    ref <- ask
+    lift $ read ref
 
 modify :: (AppState -> AppState) -> AppStateM Unit
 modify f = AppStateM $ do
-    ref <- asks
+    ref <- ask
     lift $ modify_ f ref
 
 put :: AppState -> AppStateM Unit

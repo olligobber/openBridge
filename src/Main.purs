@@ -133,4 +133,4 @@ handleAction None = pure unit
 main :: Effect Unit
 main = HA.runHalogenAff do
     body <- HA.awaitBody
-    runUI (H.hoist (pure <<< run) component) None body
+    runUI (H.hoist (H.liftEffect <<< run) component) None body
