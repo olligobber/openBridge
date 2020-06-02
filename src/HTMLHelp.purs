@@ -1,20 +1,17 @@
 module HTMLHelp
     ( button
     , select
-    , alert
     ) where
 
 import Prelude
-    (Unit, class Ord,
-    ($), (<$>), (>=>), (>>=), (<>),
-    flip, identity, otherwise)
-import Effect (Effect)
+    (  class Ord
+    , ($), (<$>), (>=>), (<>)
+    , flip, identity, otherwise
+    )
 import Data.Map as M
 import Data.Maybe (Maybe(..), maybe)
 import Data.Tuple (Tuple(..))
 import Data.Tuple as T
-import Web.HTML (window)
-import Web.HTML.Window as W
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
@@ -64,7 +61,3 @@ select act hide sel options = HH.select
             | otherwise = HH.option
                 [ HP.value name ]
                 [ HH.text name ]
-
--- Pop up alert
-alert :: String -> Effect Unit
-alert s = window >>= W.alert s
