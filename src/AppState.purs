@@ -6,14 +6,16 @@ module AppState
 import Prelude
     ( class Functor, class Apply, class Applicative, class Bind, class Monad
     , Unit
-    , const, pure, unit
+    , const, pure, unit, bind
     , ($), (<$>), (>>=), (==), (<*>), (<>)
     )
-import Control.Monad.State as S
+import Effect (Effect)
+import Effect.Ref (Ref, new, read, modify_)
 import Data.Array as A
 import Data.Maybe (Maybe(..))
-import Data.Tuple (Tuple(..), fst)
+import Data.Tuple (Tuple(..))
 import Data.Either (Either(..))
+import Control.Monad.Reader.Trans (ReaderT, runReaderT, asks, lift)
 
 import Hand as H
 import Capabilities
@@ -35,7 +37,7 @@ type AppState =
 start :: AppState
 start = { hands : NotEditing { scored : [] }, error : Nothing }
 
-newtype AppStateM x = AppStateM (S.State AppState x)
+newtype AppStateM x = AppStateM (ReaderT (Ref AppState) Effect x)
 
 derive newtype instance functorAppStateM :: Functor AppStateM
 derive newtype instance applyAppStateM :: Apply AppStateM
@@ -44,16 +46,18 @@ derive newtype instance bindAppStateM :: Bind AppStateM
 derive newtype instance monadAppStateM :: Monad AppStateM
 
 get :: AppStateM AppState
-get = AppStateM S.get
+get = AppStateM $ asks >>= lift read
 
 modify :: (AppState -> AppState) -> AppStateM Unit
-modify f = AppStateM $ S.modify_ f
+modify f = AppStateM $ do
+    ref <- asks
+    lift $ modify_ f ref
 
 put :: AppState -> AppStateM Unit
 put a = modify (const a)
 
-run :: forall x. AppStateM x -> x
-run (AppStateM s) = fst $ S.runState s start
+run :: forall x. AppStateM x -> Effect x
+run (AppStateM f) = new start >>= runReaderT f
 
 instance getHandsAppStateM :: GetHands AppStateM where
     getAll = get >>= \state -> case state.hands of
