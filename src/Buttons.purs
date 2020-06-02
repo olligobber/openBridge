@@ -9,30 +9,29 @@ module Buttons
     ) where
 
 import Prelude
-    ((==), ($), (<$>), (+), (-), (&&), (<<<), (<$), (>>=), (<>),
-    Unit,
-    not, otherwise, map, discard, const, unit, pure, show)
+    ( (==), ($), (<$>), (+), (-), (&&), (<<<), (>>=), (<$)
+    , Unit
+    , not, otherwise, map, const, unit, pure, show
+    )
 import Data.Maybe (Maybe(..), maybe)
 import Data.Tuple (Tuple(..))
-import Data.Either (Either(..))
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
+
 import Hand
-    (Hand, Suit(..), Doubled(..), Honours(..), HonoursType(..), HandScore,
-    Level,
-    newHand, renderHandResult, setDeclarer, setAllPass, allLevels, setLevel,
-    setSuit, toTricks, setTricks, defaultTricks, fromTricks, setDoubled,
-    setHonours, validHonours, scoreHand)
+    (Hand, Suit(..), Doubled(..), Honours(..), HonoursType(..), Level,
+    renderHandResult, setDeclarer, setAllPass, allLevels, setLevel, setSuit,
+    toTricks, setTricks, defaultTricks, fromTricks, setDoubled, setHonours,
+    validHonours)
 import Score (Team(..))
 import HTMLHelp (button, select)
+import Capabilities
+    (error, submit, revert, getEdit, adjust, class Edit, class Error)
 
 type Slot = H.Slot Query Message
 
-data Query a
-    = LoadHand Hand a
-    | NewHand a
-    | Deactivate a
+data Query a = Update a
 
 data Action
     = SetDeclarer Char Team
@@ -47,18 +46,14 @@ data Action
     | Revert
     | NoAction
 
-data Message
-    = SubmitHand
-        { hand :: Hand
-        , score :: HandScore
-        }
-    | RevertHand
+type Message = Unit
 
-data State
-    = Active { hand :: Hand, error :: Array String }
-    | InActive
+type State = Maybe Hand
 
-component :: forall m. H.Component HH.HTML Query Action Message m
+component :: forall m.
+    Error m =>
+    Edit m =>
+    H.Component HH.HTML Query Action Message m
 component = H.mkComponent {
     initialState : const initialState,
     render : render,
@@ -69,7 +64,7 @@ component = H.mkComponent {
 }
 
 initialState :: State
-initialState = InActive
+initialState = Nothing
 
 hideHons :: Hand -> Maybe Honours -> Boolean
 hideHons _ Nothing = true
@@ -81,55 +76,55 @@ hideHons hand (Just (Hons _ hons))
         Just suit -> not $ validHonours hons suit
 
 render :: forall m. State -> H.ComponentHTML Action () m
-render (Active state) = HH.div
+render (Just hand) = HH.div
     [ HP.id_ "buttons" ]
-    $ [ HH.div
+    [ HH.div
         [ HP.class_ $ HH.ClassName "five-buttons" ]
-        [ button (not state.hand.allPass && state.hand.declarer == Just 'N')
-            "N" $ SetDeclarer 'N' We
-        , button (not state.hand.allPass && state.hand.declarer == Just 'E')
-            "E" $ SetDeclarer 'E' They
-        , button (not state.hand.allPass && state.hand.declarer == Just 'S')
-            "S" $ SetDeclarer 'S' We
-        , button (not state.hand.allPass && state.hand.declarer == Just 'W')
-            "W" $ SetDeclarer 'W' They
-        , button (state.hand.allPass) "AP" SetAllPass
+        [ button (not hand.allPass && hand.declarer == Just 'N') "N" $
+            SetDeclarer 'N' We
+        , button (not hand.allPass && hand.declarer == Just 'E') "E" $
+            SetDeclarer 'E' They
+        , button (not hand.allPass && hand.declarer == Just 'S') "S" $
+            SetDeclarer 'S' We
+        , button (not hand.allPass && hand.declarer == Just 'W') "W" $
+            SetDeclarer 'W' They
+        , button (hand.allPass) "AP" SetAllPass
         ]
     , HH.div
         [ HP.class_ $ HH.ClassName "seven-buttons" ]
         $ (\(Tuple num level) ->
-            button (not state.hand.allPass && state.hand.level == Just level)
+            button (not hand.allPass && hand.level == Just level)
                 (show num) (SetLevel level)
             ) <$> allLevels
     , HH.div
         [ HP.class_ $ HH.ClassName "five-buttons" ]
-        [ button (not state.hand.allPass && state.hand.suit == Just Clubs)
-            "♣" $ SetSuit Clubs
-        , button (not state.hand.allPass && state.hand.suit == Just Diamonds)
-            "♦" $ SetSuit Diamonds
-        , button (not state.hand.allPass && state.hand.suit == Just Hearts)
-            "♥" $ SetSuit Hearts
-        , button (not state.hand.allPass && state.hand.suit == Just Spades)
-            "♠" $ SetSuit Spades
-        , button (not state.hand.allPass && state.hand.suit == Just NoTrumps)
-            "🚫" $ SetSuit NoTrumps
+        [ button (not hand.allPass && hand.suit == Just Clubs) "♣" $
+            SetSuit Clubs
+        , button (not hand.allPass && hand.suit == Just Diamonds) "♦" $
+            SetSuit Diamonds
+        , button (not hand.allPass && hand.suit == Just Hearts) "♥" $
+            SetSuit Hearts
+        , button (not hand.allPass && hand.suit == Just Spades) "♠" $
+            SetSuit Spades
+        , button (not hand.allPass && hand.suit == Just NoTrumps) "\\" $
+            SetSuit NoTrumps
         ]
     , HH.div
         [ HP.class_ $ HH.ClassName "render-buttons" ]
         [ button false "-" DecreaseTricks
         , HH.div
             [ HP.id_ "hand-result" ]
-            [HH.text $ renderHandResult state.hand ]
+            [HH.text $ renderHandResult hand ]
         , button false "+" IncreaseTricks
         ]
     , HH.div
         [ HP.class_ $ HH.ClassName "two-buttons" ]
-        [ select (Just <<< SetDouble) (\_ -> false) state.hand.doubled
+        [ select (Just <<< SetDouble) (\_ -> false) hand.doubled
             [ Tuple "Undoubled" Undoubled
             , Tuple "Doubled" Doubled
             , Tuple "Redobuled" Redoubled
             ]
-        , select (map SetHonours) (hideHons state.hand) state.hand.honours
+        , select (map SetHonours) (hideHons hand) hand.honours
             [ Tuple "No honors" $ Just None
             , Tuple "We have 4" $ Just $ Hons We Four
             , Tuple "We have 5" $ Just $ Hons We Five
@@ -144,73 +139,44 @@ render (Active state) = HH.div
         [ button false "Submit" Submit
         , button false "Revert" Revert
         ]
-    ] <> case state.error of
-        [] -> []
-        _ -> [ HH.div
-            [ HP.id_ "button-error" ]
-            $ HH.div_ <<< pure <<< HH.text <$> state.error
-            ]
-render InActive = HH.div [] []
+    ]
+render Nothing = HH.div [ HP.id_ "buttons" ] []
 
-modifyActive :: ({ hand :: Hand, error :: Array String } ->
-    { hand :: Hand, error :: Array String }) -> State -> State
-modifyActive f (Active s) = Active $ f s
-modifyActive _ InActive = InActive
-
-handleAction :: forall m. Action -> H.HalogenM State Action () Message m Unit
-handleAction (SetDeclarer name team) = H.modify_ <<< modifyActive $
-    \state -> { hand : setDeclarer name team $ state.hand, error : [] }
-handleAction SetAllPass = H.modify_ <<< modifyActive $
-    \state -> { hand : setAllPass state.hand, error : [] }
-handleAction (SetLevel level) = H.modify_ <<< modifyActive $
-    \state -> { hand : setLevel level state.hand, error : [] }
-handleAction (SetSuit suit) = H.modify_ <<< modifyActive $
-    \state -> { hand : setSuit suit state.hand, error : [] }
-handleAction IncreaseTricks = H.get >>= \s -> case s of
-    InActive -> pure unit
-    Active state -> let
-        oldtricks =
-            maybe (defaultTricks <$> state.hand.level) Just state.hand.tricks
+handleAction :: forall m.
+    Error m =>
+    Edit m =>
+    Action -> H.HalogenM State Action () Message m Unit
+handleAction (SetDeclarer name team) = adjust $ setDeclarer name team
+handleAction SetAllPass = adjust setAllPass
+handleAction (SetLevel level) = adjust $ setLevel level
+handleAction (SetSuit suit) = adjust $ setSuit suit
+handleAction IncreaseTricks = H.get >>= \h -> case h of
+    Nothing -> pure unit
+    Just hand ->
+        let
+            oldtricks = maybe (defaultTricks <$> hand.level) Just hand.tricks
         in case fromTricks <$> oldtricks of
-            Nothing -> H.put $ Active $ state
-                { error = ["Choose a level before changing the number won"] }
+            Nothing -> error "Choose a level before changing the number won"
             Just x -> case toTricks (x+1) of
-                Nothing -> H.put $ Active $
-                    state { error = ["Maximum number of tricks reached"] }
-                Just newtricks -> H.put $ Active $
-                    { hand : setTricks newtricks state.hand, error : [] }
-handleAction DecreaseTricks = H.get >>= \s -> case s of
-    InActive -> pure unit
-    Active state -> let
-        oldtricks =
-            maybe (defaultTricks <$> state.hand.level) Just state.hand.tricks
+                Nothing -> error "Maximum number of tricks reached"
+                Just newtricks -> adjust $ setTricks newtricks
+handleAction DecreaseTricks = H.get >>= \h -> case h of
+    Nothing -> pure unit
+    Just hand ->
+        let
+            oldtricks = maybe (defaultTricks <$> hand.level) Just hand.tricks
         in case fromTricks <$> oldtricks of
-            Nothing -> H.put $ Active $ state
-                { error = ["Choose a level before changing the number won"] }
+            Nothing -> error "Choose a level before changing the number won"
             Just x -> case toTricks (x-1) of
-                Nothing -> H.put $ Active $
-                    state { error = ["Minimum number of tricks reached"] }
-                Just newtricks -> H.put $ Active
-                    { hand : setTricks newtricks state.hand, error : [] }
-handleAction (SetDouble doubling) = H.modify_ <<< modifyActive $
-    \state -> { hand : setDoubled doubling state.hand, error : [] }
-handleAction (SetHonours hons) = H.modify_ <<< modifyActive $
-    \state -> { hand : setHonours hons state.hand, error : [] }
-handleAction Submit = H.get >>= \s -> case s of
-    InActive -> pure unit
-    Active state -> case scoreHand state.hand of
-        Left error -> H.put $ Active $ state { error = error }
-        Right score -> do
-            H.raise $ SubmitHand { hand : state.hand, score }
-            H.put InActive
-handleAction Revert = do
-    H.raise RevertHand
-    H.put InActive
+                Nothing -> error "Minimum number of tricks reached"
+                Just newtricks -> adjust $ setTricks newtricks
+handleAction (SetDouble doubling) = adjust $ setDoubled doubling
+handleAction (SetHonours hons) = adjust $ setHonours hons
+handleAction Submit = submit
+handleAction Revert = revert
 handleAction NoAction = pure unit
 
-handleQuery :: forall m a. Query a ->
-    H.HalogenM State Action () Message m (Maybe a)
-handleQuery (LoadHand hand a) = Just a <$ H.put (Active { hand, error : [] })
-handleQuery (NewHand a) = Just a <$ H.put
-    (Active { hand : newHand, error : [] })
-handleQuery (Deactivate a) = Just a <$ H.put InActive
+handleQuery :: forall m a.
+    Edit m =>
+    Query a -> H.HalogenM State Action () Message m (Maybe a)
+handleQuery (Update a) = Just a <$ (getEdit >>= H.put)

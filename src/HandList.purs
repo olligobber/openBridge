@@ -1,8 +1,8 @@
 module HandList
-    ( Action(..)
+    ( SelectedHand
+    , Action(..)
     , Message(..)
     , State
-    , Selection
     , Slot
     , Query(..)
     , component
@@ -10,45 +10,45 @@ module HandList
     ) where
 
 import Prelude
-    ((==), ($), (<$>), (-), (<$), (<>), (>>=), (>),
-    Unit, pure, otherwise, discard, const, unit)
-import Data.Array as A
+    ( ($), (<$>), (<>)
+    , Unit, pure, otherwise, const, unit, bind, discard
+    )
 import Data.Maybe (Maybe(..))
-import Effect.Unsafe as Unsafe
-import HTMLHelp (button, alert)
+import Data.Array as A
+import HTMLHelp (button)
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
-import Hand (Hand, renderHand, HandScore)
+
+import Hand (Hand, renderHand)
+import Capabilities
+    ( getAll, isNewHand, editHand, delHand, isEdit
+    , class Nav, class GetHands
+    )
 
 type Slot = H.Slot Query Message
 
-data Query a
-    = Set { hand :: Hand, score :: HandScore } a
-    | MakeNew a
-    | Deselect a
+data Query a = Update a
 
 data Action
     = EditHand Int
     | DeleteHand Int
     | NoAction
 
-data Message
-    = Edit Hand
-    | Score (Array HandScore)
-    | Deselecting
+type Message = Unit
 
-data Selection
-    = Editing Int
-    | MakingNew
-    | None
+type SelectedHand = { hand :: Hand, selected :: Boolean }
 
 type State =
-    { hands :: Array { hand :: Hand, score :: HandScore }
-    , selected :: Selection
+    { handList :: Array SelectedHand
+    , newHand :: Boolean
+    , editing :: Boolean
     }
 
-component :: forall m. H.Component HH.HTML Query Action Message m
+component :: forall m.
+    Nav m =>
+    GetHands m =>
+    H.Component HH.HTML Query Action Message m
 component = H.mkComponent {
     initialState : const initialState,
     render : render,
@@ -59,11 +59,11 @@ component = H.mkComponent {
 }
 
 initialState :: State
-initialState = { hands : [], selected : None }
+initialState = { handList : [], newHand : false, editing : false }
 
-handHTML :: forall m. Maybe Int -> Int -> Hand -> H.ComponentHTML Action () m
-handHTML sel index hand
-    | sel == Just index = HH.div
+handHTML :: forall m. Int -> SelectedHand -> H.ComponentHTML Action () m
+handHTML index {hand, selected}
+    | selected = HH.div
         [ HP.class_ $ H.ClassName "hand selected" ]
         [ HH.text $ renderHand hand
         , button false "Edit" (EditHand index)
@@ -77,68 +77,41 @@ handHTML sel index hand
         ]
 
 render :: forall m. State -> H.ComponentHTML Action () m
-render state = case state.selected of
-    MakingNew -> HH.div
+render state
+    | state.newHand = HH.div
         [ HP.id_ "hands"
         , HP.class_ $ H.ClassName "small"
         ]
         $ [ HH.div [ HP.class_ $ H.ClassName "hand selected" ] [] ]
-            <> A.mapWithIndex (handHTML Nothing)
-                (_.hand <$> state.hands)
-    None -> HH.div
-        [ HP.id_ "hands"
-        , HP.class_ $ H.ClassName "big"
-        ]
-        $ A.mapWithIndex (handHTML Nothing)
-            (_.hand <$> state.hands)
-    Editing i -> HH.div
+            <> A.mapWithIndex handHTML state.handList
+    | state.editing = HH.div
         [ HP.id_ "hands"
         , HP.class_ $ H.ClassName "small"
         ]
-        $ A.mapWithIndex (handHTML $ Just i)
-            (_.hand <$> state.hands)
+        $ A.mapWithIndex handHTML state.handList
+    | otherwise = HH.div
+        [ HP.id_ "hands"
+        , HP.class_ $ H.ClassName "big"
+        ]
+        $ A.mapWithIndex handHTML state.handList
 
-handleAction :: forall m. Action -> H.HalogenM State Action () Message m Unit
-handleAction (EditHand i) = H.get >>= \state -> case A.index state.hands i of
-    Nothing -> pure $ Unsafe.unsafePerformEffect $
-        alert "Invalid edit hand button press"
-    Just handi -> do
-        H.put $ state { selected = Editing i }
-        H.raise $ Edit handi.hand
-handleAction (DeleteHand i) =
-    H.get >>= \state -> case A.deleteAt i state.hands of
-        Nothing -> pure $ Unsafe.unsafePerformEffect $
-            alert "Invalid delete hand button press"
-        Just newHands -> case state.selected of
-            Editing j | j > i -> do
-                H.put { hands : newHands, selected : Editing $ j-1 }
-                H.raise $ Score $ _.score <$> newHands
-            Editing j | j == i -> do
-                H.put { hands : newHands, selected : None }
-                H.raise Deselecting
-                H.raise $ Score $ _.score <$> newHands
-            _ -> do
-                H.modify_ $ _ { hands = newHands }
-                H.raise $ Score $ _.score <$> newHands
+handleAction :: forall m.
+    Nav m =>
+    Action -> H.HalogenM State Action () Message m Unit
+handleAction (EditHand i) = editHand i
+handleAction (DeleteHand i) = delHand i
 handleAction NoAction = pure unit
 
-handleQuery :: forall m a. Query a ->
-    H.HalogenM State Action () Message m (Maybe a)
-handleQuery (Set newHand a) = H.get >>= \state -> case state.selected of
-    None -> do
-        let _ = Unsafe.unsafePerformEffect $ alert "Invalid query to set hand"
-        pure $ Just a
-    MakingNew -> do
-        H.modify_ $ _ { hands = [newHand] <> state.hands}
-        H.raise $ Score $ _.score <$> ([newHand] <> state.hands)
-        pure $ Just a
-    Editing i -> case A.updateAt i newHand state.hands of
-        Nothing -> do
-            let _ = Unsafe.unsafePerformEffect $ alert "Invalid hand selection"
-            pure $ Just a
-        Just newHands -> do
-            H.modify_ $ _ { hands = newHands }
-            H.raise $ Score $ _.score <$> newHands
-            pure $ Just a
-handleQuery (Deselect a) = Just a <$ H.modify_ (_ { selected = None } )
-handleQuery (MakeNew a) = Just a <$ H.modify_ (_ { selected = MakingNew } )
+handleQuery :: forall m a.
+    GetHands m =>
+    Query a -> H.HalogenM State Action () Message m (Maybe a)
+handleQuery (Update a) = do
+    hands <- getAll
+    newHand <- isNewHand
+    editing <- isEdit
+    H.put
+        { handList : (\{hand,score,selected} -> {hand,selected}) <$> hands
+        , newHand
+        , editing
+        }
+    pure $ Just a

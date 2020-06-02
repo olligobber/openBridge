@@ -1,26 +1,38 @@
 module Main where
 
-import Prelude (Unit, bind, const, pure, unit, ($), (<<<), (<$))
+import Prelude
+    ( Unit
+    , bind, const, pure, unit, discard
+    , ($), (<<<), (<$>), (>>=)
+    )
 import Effect (Effect)
 import Data.Symbol (SProxy(..))
 import Data.Maybe (Maybe(..))
 import Halogen as H
 import Halogen.Aff as HA
+import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 import Halogen.HTML as HH
 import Halogen.VDom.Driver (runUI)
+
 import HTMLHelp (button)
 import Buttons as Buttons
 import HandList as HandList
 import ScorePad as ScorePad
+import Capabilities
+    ( class GetHands, class Nav, class Error, class ReadError, class Edit
+    , newHand, clear, readError
+    )
+import AppState (AppStateM, run)
 
 data Action
-    = ButtonsMsg Buttons.Message
-    | HandListMsg HandList.Message
+    = ButtonsMsg Unit
+    | HandListMsg Unit
     | NewHand
+    | ClearError
     | None
 
-type State = Unit
+type State = Maybe (Array String)
 
 type Slots =
     ( buttons :: Buttons.Slot Unit
@@ -37,7 +49,7 @@ _handList = SProxy
 _scorePad :: SProxy "scorePad"
 _scorePad = SProxy
 
-component :: forall q m. H.Component HH.HTML q Action Unit m
+component :: forall q. H.Component HH.HTML q Action Unit AppStateM
 component = H.mkComponent
     { initialState : const initialState
     , render
@@ -45,10 +57,15 @@ component = H.mkComponent
     }
 
 initialState :: State
-initialState = unit
+initialState = Nothing
 
-render :: forall m. State -> H.ComponentHTML Action Slots m
-render _ = HH.div
+render :: forall m.
+    GetHands m =>
+    Nav m =>
+    Error m =>
+    Edit m =>
+    State -> H.ComponentHTML Action Slots m
+render Nothing = HH.div
     [ HP.id_ "main" ]
     [ HH.slot _scorePad unit ScorePad.component ScorePad.NoAction
         (const $ Just None)
@@ -63,25 +80,57 @@ render _ = HH.div
             (Just <<< ButtonsMsg)
         ]
     ]
+render (Just e) = HH.div
+    [ HP.id_ "main" ]
+    [ HH.slot _scorePad unit ScorePad.component ScorePad.NoAction
+        (const $ Just None)
+    , HH.div
+        [ HP.id_ "rightpanel" ]
+        [ HH.div
+            [ HP.id_ "menu" ]
+            [ button false "Add Hand" NewHand ]
+        , HH.slot _handList unit HandList.component HandList.NoAction
+            (Just <<< HandListMsg)
+        , HH.slot _buttons unit Buttons.component Buttons.NoAction
+            (Just <<< ButtonsMsg)
+        ]
+    , HH.div
+        [ HP.id_ "errors"
+        , HE.onClick $ \_ -> Just ClearError
+        ]
+        $ HH.text <$> e
+    ]
 
-handleAction :: forall m. Action -> H.HalogenM State Action Slots Unit m Unit
-handleAction (ButtonsMsg (Buttons.SubmitHand hand)) = do
-    _ <- H.query _handList unit $ HandList.Set hand unit
-    unit <$ (H.query _handList unit $ HandList.Deselect unit)
-handleAction (ButtonsMsg Buttons.RevertHand) =
-    unit <$ (H.query _handList unit $ HandList.Deselect unit)
-handleAction (HandListMsg (HandList.Edit h)) = do
-    unit <$ (H.query _buttons unit $ Buttons.LoadHand h unit)
-handleAction (HandListMsg (HandList.Score s)) = do
-    unit <$ (H.query _scorePad unit $ ScorePad.Score s unit)
-handleAction (HandListMsg HandList.Deselecting) =
-    unit <$ (H.query _buttons unit $ Buttons.Deactivate unit)
+handleAction :: forall m.
+    Error m =>
+    ReadError m =>
+    Nav m =>
+    Action -> H.HalogenM State Action Slots Unit m Unit
+handleAction (ButtonsMsg _) = do
+    _ <- H.query _handList unit $ HandList.Update unit
+    _ <- H.query _buttons unit $ Buttons.Update unit
+    _ <- H.query _scorePad unit $ ScorePad.Update unit
+    readError >>= H.put
+handleAction (HandListMsg _) = do
+    _ <- H.query _handList unit $ HandList.Update unit
+    _ <- H.query _buttons unit $ Buttons.Update unit
+    _ <- H.query _scorePad unit $ ScorePad.Update unit
+    readError >>= H.put
 handleAction NewHand = do
-    _ <- H.query _handList unit $ HandList.MakeNew unit
-    unit <$ (H.query _buttons unit $ Buttons.NewHand unit)
+    newHand
+    _ <- H.query _handList unit $ HandList.Update unit
+    _ <- H.query _buttons unit $ Buttons.Update unit
+    _ <- H.query _scorePad unit $ ScorePad.Update unit
+    readError >>= H.put
+handleAction ClearError = do
+    clear
+    _ <- H.query _handList unit $ HandList.Update unit
+    _ <- H.query _buttons unit $ Buttons.Update unit
+    _ <- H.query _scorePad unit $ ScorePad.Update unit
+    readError >>= H.put
 handleAction None = pure unit
 
 main :: Effect Unit
 main = HA.runHalogenAff do
     body <- HA.awaitBody
-    runUI component None body
+    runUI (H.hoist (pure <<< run) component) None body

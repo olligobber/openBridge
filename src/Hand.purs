@@ -25,7 +25,7 @@ module Hand (
     renderHandResult,
     HandScore,
     scoreHand
-) where
+    ) where
 
 import Prelude
     (class Eq, class Ord, const, between, otherwise, show, pure, not, join,

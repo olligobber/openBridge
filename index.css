@@ -145,11 +145,15 @@ select {
   text-align: center;
   display: inline-block; }
 
-#button-error {
+#error {
+  display: block;
+  position: fixed;
+  line-height: 3em;
+  bottom: 0;
+  width: 100%;
   padding: 1%;
   text-align: center;
   background: #cc516a;
-  color: #ececec;
-  border-radius: 0.5vh; }
+  color: #ececec; }
 
 /*# sourceMappingURL=index.css.map */

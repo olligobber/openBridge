@@ -9,8 +9,9 @@ module ScorePad
     ) where
 
 import Prelude
-    ((==), ($), (<$>), (<$), (<>), (>>>), (&&), not,
-    Unit, pure, const, unit, map, identity, show)
+    ( (==), ($), (<$>), (<>), (>>>), (&&), not
+    , Unit, pure, const, unit, map, identity, show, bind, discard
+    )
 import Data.Array as A
 import Data.Array.NonEmpty (toArray)
 import Data.Maybe (Maybe(..))
@@ -18,22 +19,22 @@ import Data.Traversable (sequence)
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
-import Hand (HandScore)
+
 import Score (scoreAll, ScoreEntry, ScoreTotal, Team(..), startScore)
+import Capabilities (getAll, class GetHands)
 
 type Slot = H.Slot Query Message
 
-data Query a
-    = Score (Array HandScore) a
+data Query a = Update a
 
-data Action
-    = NoAction
+data Action = NoAction
 
 data Message
 
-type State = {entries :: Array (Maybe (ScoreEntry String)), totals :: ScoreTotal}
+type State =
+    { entries :: Array (Maybe (ScoreEntry String)), totals :: ScoreTotal }
 
-component :: forall m. H.Component HH.HTML Query Action Message m
+component :: forall m. GetHands m => H.Component HH.HTML Query Action Message m
 component = H.mkComponent {
     initialState : const initialState,
     render : render,
@@ -111,6 +112,11 @@ render state = HH.table
 handleAction :: forall m. Action -> H.HalogenM State Action () Message m Unit
 handleAction NoAction = pure unit
 
-handleQuery :: forall m a. Query a ->
-    H.HalogenM State Action () Message m (Maybe a)
-handleQuery (Score scores a) = Just a <$ H.put (scoreAll "Rubber bonus" scores)
+handleQuery :: forall m a.
+    GetHands m =>
+    Query a -> H.HalogenM State Action () Message m (Maybe a)
+handleQuery (Update a) = do
+    handList <- getAll
+    let scores = _.score <$> handList
+    H.put (scoreAll "Rubber bonus" scores)
+    pure $ Just a
