@@ -14,6 +14,7 @@ import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 import Halogen.HTML as HH
 import Halogen.VDom.Driver (runUI)
+import Effect.Ref as R
 
 import HTMLHelp (button)
 import Buttons as Buttons
@@ -23,7 +24,7 @@ import Capabilities
     ( class GetHands, class Nav, class Error, class ReadError, class Edit
     , newHand, clear, readError
     )
-import AppState (AppStateM, run)
+import AppState (AppStateM, run, start)
 
 data Action
     = ButtonsMsg Unit
@@ -133,4 +134,5 @@ handleAction None = pure unit
 main :: Effect Unit
 main = HA.runHalogenAff do
     body <- HA.awaitBody
-    runUI (H.hoist (H.liftEffect <<< run) component) None body
+    ref <- H.liftEffect $ R.new start
+    runUI (H.hoist (H.liftEffect <<< run ref) component) None body

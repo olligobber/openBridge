@@ -1,6 +1,8 @@
 module AppState
-    ( AppStateM
+    ( HandList
+    , AppStateM
     , run
+    , start
     ) where
 
 import Prelude
@@ -10,7 +12,7 @@ import Prelude
     , ($), (<$>), (>>=), (==), (<*>), (<>)
     )
 import Effect (Effect)
-import Effect.Ref (Ref, new, read, modify_)
+import Effect.Ref (Ref, read, modify_)
 import Data.Array as A
 import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..))
@@ -58,8 +60,8 @@ modify f = AppStateM $ do
 put :: AppState -> AppStateM Unit
 put a = modify (const a)
 
-run :: forall x. AppStateM x -> Effect x
-run (AppStateM f) = new start >>= runReaderT f
+run :: forall x. Ref AppState -> AppStateM x -> Effect x
+run r (AppStateM f) = runReaderT f r
 
 instance getHandsAppStateM :: GetHands AppStateM where
     getAll = get >>= \state -> case state.hands of
