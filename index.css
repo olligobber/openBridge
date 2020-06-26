@@ -1,9 +1,9 @@
-@import url("https://fonts.googleapis.com/css?family=Source+Code+Pro");
+@import url(https://cdn.jsdelivr.net/gh/tonsky/FiraCode@4/distr/fira_code.css);
 @media (orientation: portrait) {
   body {
     width: 200vw; } }
 body {
-  font-family: "Source Code Pro", monospace;
+  font-family: "Fira Code", monospace;
   font-size: 3vh;
   height: 90vh;
   color: #272c35;
@@ -117,6 +117,8 @@ select {
 
 #buttons {
   float: bottom; }
+  #buttons .button {
+    font-size: 4vh; }
 
 .two-buttons .button, .two-buttons select {
   margin: 1%;
@@ -143,7 +145,8 @@ select {
 #hand-result {
   width: 76%;
   text-align: center;
-  display: inline-block; }
+  display: inline-block;
+  font-size: 5vh; }
 
 #errors {
   display: block;

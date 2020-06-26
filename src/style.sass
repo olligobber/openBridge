@@ -6,7 +6,8 @@ $red: rgb(204,81,106)
 
 $panelwidth: 46%
 
-@import url('https://fonts.googleapis.com/css?family=Source+Code+Pro')
+@import url(https://cdn.jsdelivr.net/gh/tonsky/FiraCode@4/distr/fira_code.css)
+
 
 // Global parts
 
@@ -15,7 +16,7 @@ $panelwidth: 46%
         width: 200.0vw
 
 body
-    font-family: 'Source Code Pro', monospace
+    font-family: 'Fira Code', monospace
     font-size: 3.0vh
     height: 90.0vh
     color: $black
@@ -137,6 +138,9 @@ select
 #buttons
     float: bottom
 
+    .button
+        font-size: 4.0vh
+
 .two-buttons
     .button, select
         margin: 1%
@@ -164,6 +168,7 @@ select
     width: 76%
     text-align: center
     display: inline-block
+    font-size: 5.0vh
 
 #errors
     display: block
