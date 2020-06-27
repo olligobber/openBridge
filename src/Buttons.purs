@@ -114,7 +114,7 @@ render (Just hand) = HH.div
         [ button false "-" DecreaseTricks
         , HH.div
             [ HP.id_ "hand-result" ]
-            [HH.text $ renderHandResult hand ]
+            [ HH.text $ renderHandResult hand ]
         , button false "+" IncreaseTricks
         ]
     , HH.div

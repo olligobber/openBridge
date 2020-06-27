@@ -109,7 +109,8 @@ select {
   border-bottom: solid #4e586a;
   border-width: 1px;
   height: 4.5vh;
-  padding: 1%; }
+  padding: 1%;
+  white-space: pre; }
   .hand .button {
     float: right;
     border-radius: 0.5vh;
@@ -146,7 +147,8 @@ select {
   width: 76%;
   text-align: center;
   display: inline-block;
-  font-size: 5vh; }
+  font-size: 5vh;
+  white-space: pre; }
 
 #errors {
   display: block;
