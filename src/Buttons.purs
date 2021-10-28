@@ -106,7 +106,7 @@ render (Just hand) = HH.div
             SetSuit Hearts
         , button (not hand.allPass && hand.suit == Just Spades) "♠" $
             SetSuit Spades
-        , button (not hand.allPass && hand.suit == Just NoTrumps) "\\" $
+        , button (not hand.allPass && hand.suit == Just NoTrumps) "ℕ" $
             SetSuit NoTrumps
         ]
     , HH.div

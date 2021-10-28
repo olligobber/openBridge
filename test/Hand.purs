@@ -181,7 +181,7 @@ main = runTest do
                         # setTricks tricks
                         # scoreHand
                         # pure
-        test "Validates N3\\X+0" $
+        test "Validates N3ℕX+0" $
             A.assert "Hand created successfully" $ any isRight do
                 level <- toLevel 3
                 tricks <- toTricks 9
@@ -264,8 +264,8 @@ main = runTest do
                     # setTricks tricks
                     # renderHand
                     # pure
-        test "Rendering S4\\-10" $
-            A.equal (Just "S4\\  -10 ") do
+        test "Rendering S4ℕ-10" $
+            A.equal (Just "S4ℕ  -10 ") do
                 level <- toLevel 4
                 tricks <- toTricks 0
                 newHand
@@ -286,7 +286,7 @@ main = runTest do
                     # renderHand
                     # pure
     suite "Scoring hands" do
-        test "Scores E2\\+0" do
+        test "Scores E2ℕ+0" do
             let maybeHand = do
                     level <- toLevel 2
                     newHand
@@ -302,7 +302,7 @@ main = runTest do
                 scorepad = scoreAll "Rubber Bonus" [scoredHand]
             A.equal
                 [ Just {team : We, below : true, amount : 70,
-                    source : "Won E2\\"} ]
+                    source : "Won E2ℕ"} ]
                 scorepad.entries
             A.equal (startTeams false) scorepad.totals.vulnerable
             A.equal {we : 70, they : 0} scorepad.totals.below
@@ -357,7 +357,7 @@ main = runTest do
             A.equal {we : true, they : false} scorepad.totals.vulnerable
             A.equal {we : 0, they : 0} scorepad.totals.below
             A.equal {we : 140, they : 0} scorepad.totals.total
-        test "Scores S1\\XX+2" do
+        test "Scores S1ℕXX+2" do
             let maybeHand = do
                     level <- toLevel 1
                     tricks <- toTricks 9
@@ -376,12 +376,12 @@ main = runTest do
                 scorepad = scoreAll "Rubber Bonus" [scoredHand]
             A.equal
                 [ Just {team : They, below : true, amount : 160,
-                    source : "Won S1\\XX"}
+                    source : "Won S1ℕXX"}
                 , Nothing
                 , Just {team : They, below : false, amount : 400,
-                    source : "S1\\XX with 2 overtrick(s)"}
+                    source : "S1ℕXX with 2 overtrick(s)"}
                 , Just {team : They, below : false, amount : 100,
-                    source : "S1\\XX insult bonus"}
+                    source : "S1ℕXX insult bonus"}
                 ]
                 scorepad.entries
             A.equal {we : false, they : true} scorepad.totals.vulnerable
@@ -416,7 +416,7 @@ main = runTest do
             A.equal {we : false, they : false} scorepad.totals.vulnerable
             A.equal {we : 0, they : 60} scorepad.totals.below
             A.equal {we : 0, they : 210} scorepad.totals.total
-        test "Scores N6♣+0, S1\\+0, N2♥-2, S3♦X+1" do
+        test "Scores N6♣+0, S1ℕ+0, N2♥-2, S3♦X+1" do
             let maybeHands = do
                     level1 <- toLevel 1
                     level2 <- toLevel 2
@@ -461,7 +461,7 @@ main = runTest do
                 , Just {team : We, below : false, amount : 500,
                     source : "N6♣ slam bonus"}
                 , Just {team : We, below : true, amount : 40,
-                    source : "Won S1\\"}
+                    source : "Won S1ℕ"}
                 , Just {team : They, below : false, amount : 200,
                     source : "Lost N2♥ with 2 undertrick(s)"}
                 , Just {team : We, below : true, amount : 120,
@@ -478,7 +478,7 @@ main = runTest do
             A.equal {we : false, they : false} scorepad.totals.vulnerable
             A.equal {we : 0, they : 0} scorepad.totals.below
             A.equal {we : 1730, they : 200} scorepad.totals.total
-        test "Scores E4♠+1, S7♠+0, N1\\X-4, N4♥XX+2" do
+        test "Scores E4♠+1, S7♠+0, N1ℕX-4, N4♥XX+2" do
             let maybeHands = do
                     level1 <- toLevel 1
                     level4 <- toLevel 4
@@ -530,7 +530,7 @@ main = runTest do
                 , Just {team : They, below : false, amount : 1000,
                     source : "S7♠ slam bonus"}
                 , Just {team : We, below : false, amount : 1100,
-                    source : "Lost N1\\X with 4 undertrick(s)"}
+                    source : "Lost N1ℕX with 4 undertrick(s)"}
                 , Just {team : They, below : true, amount : 480,
                     source : "Won N4♥XX"}
                 , Nothing
@@ -545,7 +545,7 @@ main = runTest do
             A.equal {we : false, they : false} scorepad.totals.vulnerable
             A.equal {we : 0, they : 0} scorepad.totals.below
             A.equal {we : 1250, they : 3090} scorepad.totals.total
-        test "Scores W4♠XX-5h, N3\\+0h, E5♣X-6h, N7\\X+0h" do
+        test "Scores W4♠XX-5h, N3ℕ+0h, E5♣X-6h, N7ℕX+0h" do
             let maybeHands = do
                     level3 <- toLevel 3
                     level4 <- toLevel 4
@@ -590,31 +590,31 @@ main = runTest do
                 , Just {team : We, below : false, amount : 100,
                     source : "W4♠XX honours (4 out of 5)"}
                 , Just {team : We, below : true, amount : 100,
-                    source : "Won N3\\"}
+                    source : "Won N3ℕ"}
                 , Nothing
                 , Just {team : We, below : false, amount : 150,
-                    source : "N3\\ honours (aces)"}
+                    source : "N3ℕ honours (aces)"}
                 , Just {team : We, below : false, amount : 1400,
                     source : "Lost E5♣X with 6 undertrick(s)"}
                 , Just {team : We, below : false, amount : 150,
                     source : "E5♣X honours (5 out of 5)"}
                 , Just {team : We, below : true, amount : 440,
-                    source : "Won N7\\X"}
+                    source : "Won N7ℕX"}
                 , Nothing
                 , Just {team : We, below : false, amount : 700,
                     source : "Rubber Bonus"}
                 , Just {team : We, below : false, amount : 50,
-                    source : "N7\\X insult bonus"}
+                    source : "N7ℕX insult bonus"}
                 , Just {team : We, below : false, amount : 1500,
-                    source : "N7\\X slam bonus and vulnerable"}
+                    source : "N7ℕX slam bonus and vulnerable"}
                 , Just {team : We, below : false, amount : 150,
-                    source : "N7\\X honours (aces)"}
+                    source : "N7ℕX honours (aces)"}
                 ]
                 scorepad.entries
             A.equal {we : false, they : false} scorepad.totals.vulnerable
             A.equal {we : 0, they : 0} scorepad.totals.below
             A.equal {we : 6940, they : 0} scorepad.totals.total
-        test "Scores S2♠-1, S4♥+0h, N2\\-3h, S6♣+1h" do
+        test "Scores S2♠-1, S4♥+0h, N2ℕ-3h, S6♣+1h" do
             let maybeHands = do
                     level2 <- toLevel 2
                     level4 <- toLevel 4
@@ -661,9 +661,9 @@ main = runTest do
                 , Just {team : We, below : false, amount : 100,
                     source : "S4♥ honours (4 out of 5)"}
                 , Just {team : They, below : false, amount : 300,
-                    source : "Lost N2\\ with 3 undertrick(s)"}
+                    source : "Lost N2ℕ with 3 undertrick(s)"}
                 , Just {team : They, below : false, amount : 150,
-                    source : "N2\\ honours (aces)"}
+                    source : "N2ℕ honours (aces)"}
                 , Just {team : We, below : true, amount : 120,
                     source : "Won S6♣"}
                 , Nothing
